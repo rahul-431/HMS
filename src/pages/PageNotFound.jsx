@@ -4,7 +4,7 @@ import { useMoveBack } from "../hooks/useMoveBack";
 import Heading from "../ui/Heading";
 
 const StyledPageNotFound = styled.main`
-  height: 100vh;
+  height: 100%;
   background-color: var(--color-grey-50);
   display: flex;
   align-items: center;
