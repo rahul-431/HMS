@@ -3,33 +3,39 @@ import { useForm } from "react-hook-form";
 import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
-import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import FormRow from "../../ui/FormRow";
-import useCreateCabin from "./useCreateCabin";
+import useUpdateCabin from "./useUpdateCabin";
+import toast from "react-hot-toast";
 
-function CreateCabinForm({ closeModal }) {
-  const { register, handleSubmit, getValues, formState } = useForm();
+function CabinEditForm({ editCabin = {}, closeModal: setShowForm }) {
+  const { id: editId, ...editValues } = editCabin;
+  const editSession = Boolean(editId);
+
+  const { register, handleSubmit, getValues, formState } = useForm({
+    defaultValues: editSession ? editValues : {},
+  });
   const { errors } = formState;
-  const { createCabin, isCreating } = useCreateCabin();
+  const { isUpdating, updateCabin } = useUpdateCabin();
   const handleCabinFormSubmit = (data) => {
-    createCabin(
-      { ...data, image: data.image[0] },
-      {
-        onSuccess: () => {
-          closeModal?.();
-        },
-      }
-    );
+    if (formState.isDirty) {
+      updateCabin(
+        { newCabin: data, editId },
+        {
+          onSuccess: () => {
+            setShowForm(false);
+          },
+        }
+      );
+    }
+    toast.success("No change found Already uptodate");
+    setShowForm(false);
   };
   const onError = (errors) => {
     console.log(errors);
   };
   return (
-    <Form
-      onSubmit={handleSubmit(handleCabinFormSubmit, onError)}
-      type={closeModal ? "modal" : "regular"}
-    >
+    <Form onSubmit={handleSubmit(handleCabinFormSubmit, onError)} type="modal">
       <FormRow label="Cabin Name" error={errors?.name?.message} id="name">
         <Input
           type="text"
@@ -84,7 +90,6 @@ function CreateCabinForm({ closeModal }) {
         <Input
           type="number"
           id="discount"
-          defaultValue={0}
           {...register("discount", {
             required: "This Field is required",
             validate: (value) =>
@@ -102,33 +107,21 @@ function CreateCabinForm({ closeModal }) {
         <Textarea
           type="number"
           id="description"
-          defaultValue=""
           {...register("description", {
             required: "This Field is required",
           })}
         />
       </FormRow>
-
-      <FormRow label="Image" id="image" error={errors?.image?.message}>
-        <FileInput
-          id="image"
-          accept="image/*"
-          {...register("image", {
-            required: "This Field is required",
-          })}
-        />
-      </FormRow>
-
       <FormRow>
-        <Button variation="danger" type="reset" onClick={() => closeModal?.()}>
+        <Button variation="danger" onClick={() => setShowForm(false)}>
           Cancel
         </Button>
-        <Button type="submit" variation="primary" disabled={isCreating}>
-          Create cabin
+        <Button type="submit" variation="primary" disabled={isUpdating}>
+          Edit
         </Button>
       </FormRow>
     </Form>
   );
 }
 
-export default CreateCabinForm;
+export default CabinEditForm;
