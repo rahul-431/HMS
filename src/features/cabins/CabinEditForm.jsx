@@ -6,7 +6,6 @@ import Button from "../../ui/Button";
 import Textarea from "../../ui/Textarea";
 import FormRow from "../../ui/FormRow";
 import useUpdateCabin from "./useUpdateCabin";
-import toast from "react-hot-toast";
 
 function CabinEditForm({ editCabin = {}, closeModal: setShowForm }) {
   const { id: editId, ...editValues } = editCabin;
@@ -18,18 +17,14 @@ function CabinEditForm({ editCabin = {}, closeModal: setShowForm }) {
   const { errors } = formState;
   const { isUpdating, updateCabin } = useUpdateCabin();
   const handleCabinFormSubmit = (data) => {
-    if (formState.isDirty) {
-      updateCabin(
-        { newCabin: data, editId },
-        {
-          onSuccess: () => {
-            setShowForm(false);
-          },
-        }
-      );
-    }
-    toast.success("No change found Already uptodate");
-    setShowForm(false);
+    updateCabin(
+      { newCabin: data, editId },
+      {
+        onSuccess: () => {
+          setShowForm(false);
+        },
+      }
+    );
   };
   const onError = (errors) => {
     console.log(errors);
@@ -117,7 +112,7 @@ function CabinEditForm({ editCabin = {}, closeModal: setShowForm }) {
           Cancel
         </Button>
         <Button type="submit" variation="primary" disabled={isUpdating}>
-          Edit
+          Update
         </Button>
       </FormRow>
     </Form>

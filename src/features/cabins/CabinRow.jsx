@@ -12,6 +12,7 @@ import useDeleteCabin from "./useDeleteCabin";
 import useCreateCabin from "./useCreateCabin";
 import Spinner from "../../ui/Spinner";
 import Modal from "../../ui/Modal";
+import ConfirmAction from "../../ui/ConfirmAction";
 
 const TableRow = styled.div`
   display: grid;
@@ -125,15 +126,26 @@ export default function CabinRow({ cabin }) {
               </Modal.Window>
             </Modal>
           </span>
-          <ActionButton
-            title="Delete"
-            onClick={() => deleteCabin(id)}
-            disabled={isDeleting}
-          >
-            <HiOutlineTrash />
-          </ActionButton>
+          <span>
+            <Modal>
+              <Modal.Open opens="confirm-delete">
+                <ActionButton title="Delete">
+                  <HiOutlineTrash />
+                </ActionButton>
+              </Modal.Open>
+              <Modal.Window name="confirm-delete">
+                <ConfirmAction
+                  action="delete"
+                  resourceName="Cabins"
+                  disabled={isDeleting}
+                  onConfirm={() => deleteCabin(id)}
+                />
+              </Modal.Window>
+            </Modal>
+          </span>
         </ActionDiv>
       </TableRow>
+
       {/* another way of displaying modal except Compund component pattern */}
       {/* {showForm && (
         <Modal closeModal={() => setShowForm(false)}>

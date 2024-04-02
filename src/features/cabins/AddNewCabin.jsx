@@ -11,14 +11,11 @@ const AddNewCabin = () => {
       <Modal.Window name="cabin-form">
         <CreateCabinForm />
       </Modal.Window>
-      {/* <Modal.Open opens="cabin-table">
-        <Button>Show Table</Button>
-      </Modal.Open>
-      <Modal.Window name="cabin-table">
-        <CabinTable />
-      </Modal.Window> */}
     </Modal>
   );
+
+  //Just Another way of using modal (without compound component pattern)
+
   //   const [isModalOpen, setIsModalOpen] = useState(false);
   //   return (
   //     <>
