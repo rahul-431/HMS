@@ -14,6 +14,7 @@ import Spinner from "../../ui/Spinner";
 import Modal from "../../ui/Modal";
 import ConfirmAction from "../../ui/ConfirmAction";
 import Table from "../../ui/Table";
+import Menus from "../../ui/Menus";
 
 const Img = styled.img`
   display: block;
@@ -47,23 +48,6 @@ const ActionDiv = styled.div`
   display: flex;
   gap: 1.4rem;
 `;
-const ActionButton = styled.button`
-  border: none;
-  background: none;
-  outline: none;
-  & svg {
-    width: 2.4rem;
-    height: 2.4rem;
-    color: var(--color-grey-400);
-    transition: all 0.3s;
-  }
-  &:hover svg {
-    color: var(--color-brand-600);
-  }
-  &:active svg {
-    outline: none;
-  }
-`;
 
 export default function CabinRow({ cabin }) {
   const { isDeleting, deleteCabin } = useDeleteCabin();
@@ -95,41 +79,42 @@ export default function CabinRow({ cabin }) {
         )}
         <div>{description}</div>
         <ActionDiv>
-          <ActionButton
-            onClick={() => {
-              handleDuplicate();
-            }}
-            title="Duplicate"
-          >
-            <HiOutlineSquare2Stack />
-          </ActionButton>
           <span>
             <Modal>
-              <Modal.Open opens="cabin-edit-form">
-                <ActionButton title="Edit">
-                  <HiOutlinePencilSquare />
-                </ActionButton>
-              </Modal.Open>
-              <Modal.Window name="cabin-edit-form">
-                <CabinEditForm editCabin={cabin} />
-              </Modal.Window>
-            </Modal>
-          </span>
-          <span>
-            <Modal>
-              <Modal.Open opens="confirm-delete">
-                <ActionButton title="Delete">
-                  <HiOutlineTrash />
-                </ActionButton>
-              </Modal.Open>
-              <Modal.Window name="confirm-delete">
-                <ConfirmAction
-                  action="delete"
-                  resourceName="Cabins"
-                  disabled={isDeleting}
-                  onConfirm={() => deleteCabin(id)}
-                />
-              </Modal.Window>
+              <Menus.Menu>
+                <Menus.Toggle id={id} />
+                <Menus.List id={id}>
+                  <Menus.Button
+                    icon={<HiOutlineSquare2Stack />}
+                    onClick={() => {
+                      handleDuplicate();
+                    }}
+                  >
+                    Duplicate
+                  </Menus.Button>
+                  <Modal.Open opens="cabin-edit-form">
+                    <Menus.Button icon={<HiOutlinePencilSquare />}>
+                      Edit
+                    </Menus.Button>
+                  </Modal.Open>
+                  <Modal.Open opens="confirm-delete">
+                    <Menus.Button icon={<HiOutlineTrash />}>
+                      Delete
+                    </Menus.Button>
+                  </Modal.Open>
+                </Menus.List>
+                <Modal.Window name="cabin-edit-form">
+                  <CabinEditForm editCabin={cabin} />
+                </Modal.Window>
+                <Modal.Window name="confirm-delete">
+                  <ConfirmAction
+                    action="delete"
+                    resourceName="Cabins"
+                    disabled={isDeleting}
+                    onConfirm={() => deleteCabin(id)}
+                  />
+                </Modal.Window>
+              </Menus.Menu>
             </Modal>
           </span>
         </ActionDiv>
