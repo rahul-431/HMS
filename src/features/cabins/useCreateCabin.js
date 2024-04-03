@@ -10,7 +10,6 @@ export default function useCreateCabin() {
     onSuccess: () => {
       toast.success("New room created successfully");
       queryClient.invalidateQueries({ queryKey: ["cabin"] });
-      //   reset();
     },
     onError: (error) => {
       toast.error(error.message);
