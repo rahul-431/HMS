@@ -1,7 +1,7 @@
 import supabase, { supabaseUrl } from "./supabase";
 
 export async function getRooms() {
-  const { data, error } = await supabase.from("room").select("*");
+  const { data, error } = await supabase.from("cabins").select("*");
   if (error) {
     console.error(error);
     throw new Error("Rooms could not be loaded");
@@ -10,7 +10,7 @@ export async function getRooms() {
 }
 export async function deleteRoom(id) {
   console.log("deleting this id of room", id);
-  const { data, error } = await supabase.from("room").delete().eq("id", id);
+  const { data, error } = await supabase.from("cabins").delete().eq("id", id);
 
   if (error) {
     console.log(error);
@@ -31,7 +31,7 @@ export async function createRoom(newCabin) {
   // https://vuermdkdtcqyicfvebaq.supabase.co/storage/v1/object/public/room_images/cabin-001.jpg?t=2024-04-01T12%3A09%3A39.984Z
   //1. create new cabin
   const { data, error } = await supabase
-    .from("room")
+    .from("cabins")
     .insert([{ ...newCabin, image: imagePath }])
     .select();
   if (error) {
@@ -46,7 +46,7 @@ export async function createRoom(newCabin) {
 
   // 3. delete the room if ther waw an error uploading image
   if (storageError) {
-    await supabase.from("room").delete().eq("id", data.id);
+    await supabase.from("cabins").delete().eq("id", data.id);
     console.log(storageError);
     throw new Error("Room image could not be uploaded and room is not created");
   }
@@ -56,7 +56,7 @@ export async function updateRoom(editCabin) {
   // console.log(newCabin, id);
   const { newCabin, editId } = editCabin;
   const { data, error } = await supabase
-    .from("room")
+    .from("cabins")
     .update(newCabin)
     .eq("id", editId)
     .select();

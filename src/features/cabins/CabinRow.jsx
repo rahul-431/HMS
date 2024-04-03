@@ -77,7 +77,6 @@ export default function CabinRow({ cabin }) {
         ) : (
           <span>&mdash;</span>
         )}
-        <div>{description}</div>
         <ActionDiv>
           <span>
             <Modal>

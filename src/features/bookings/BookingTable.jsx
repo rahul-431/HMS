@@ -1,9 +1,21 @@
 import BookingRow from "./BookingRow";
 import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
-
+import Empty from "../../ui/Empty";
+import useBookings from "./useBookings";
+import Spinner from "../../ui/Spinner";
+import toast from "react-hot-toast";
+import _ from "lodash";
+import Pagination from "../../ui/Pagination";
+// import { useSearchParams } from "react-router-dom";
 function BookingTable() {
-  const bookings = [];
+  const { bookings, isLoading, error, count } = useBookings();
+
+  if (_.isUndefined(bookings)) return <Empty resource="bookings" />;
+  if (isLoading) return <Spinner />;
+  if (error) {
+    toast.error(error);
+  }
 
   return (
     <Menus>
@@ -23,6 +35,9 @@ function BookingTable() {
             <BookingRow key={booking.id} booking={booking} />
           )}
         />
+        <Table.Footer>
+          <Pagination count={count} />
+        </Table.Footer>
       </Table>
     </Menus>
   );
