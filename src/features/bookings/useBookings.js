@@ -27,7 +27,7 @@ export default function useBookings() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["booking", filter, sortBy, page],
+    queryKey: ["bookings", filter, sortBy, page],
     queryFn: () => getBookings({ filter, sortBy, page }),
   });
 
@@ -36,12 +36,12 @@ export default function useBookings() {
   const pageCount = Math.ceil(count * PAGE_SIZE);
   if (page < pageCount)
     queryClient.prefetchQuery({
-      queryKey: ["booking", filter, sortBy, page + 1],
+      queryKey: ["bookings", filter, sortBy, page + 1],
       queryFn: () => getBookings({ filter, sortBy, page: page + 1 }),
     });
   if (page > 1)
     queryClient.prefetchQuery({
-      queryKey: ["booking", filter, sortBy, page - 1],
+      queryKey: ["bookings", filter, sortBy, page - 1],
       queryFn: () => getBookings({ filter, sortBy, page: page - 1 }),
     });
   return { bookings, count, isLoading, error };
