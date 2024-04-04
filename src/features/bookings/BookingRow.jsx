@@ -8,7 +8,7 @@ import Table from "../../ui/Table";
 import { formatCurrency } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
 import Menus from "../../ui/Menus";
-import { HiEye } from "react-icons/hi2";
+import { HiOutlineArrowDownOnSquareStack, HiOutlineEye } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 
 const Cabin = styled.div`
@@ -86,11 +86,19 @@ function BookingRow({
         <Menus.Toggle id={bookingId} />
         <Menus.List id={bookingId}>
           <Menus.Button
-            icon={<HiEye />}
+            icon={<HiOutlineEye />}
             onClick={() => navigate(`/bookings/${bookingId}`)}
           >
             See Details
           </Menus.Button>
+          {status === "unconfirmed" && (
+            <Menus.Button
+              icon={<HiOutlineArrowDownOnSquareStack />}
+              onClick={() => navigate(`/checkin/${bookingId}`)}
+            >
+              Check In
+            </Menus.Button>
+          )}
         </Menus.List>
       </Menus.Menu>
     </Table.Row>
