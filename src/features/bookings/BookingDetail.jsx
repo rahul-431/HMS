@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { HiOutlineArrowDownOnSquareStack } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
-
+import _ from "lodash";
 import BookingDataBox from "./BookingDataBox";
 import Row from "../../ui/Row";
 import Heading from "../../ui/Heading";
@@ -13,7 +13,7 @@ import ButtonText from "../../ui/ButtonText";
 import { useMoveBack } from "../../hooks/useMoveBack";
 import useBooking from "./useBooking";
 import Spinner from "../../ui/Spinner";
-import _ from "lodash";
+import CheckoutButton from "../check-in-out/CheckoutButton";
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -56,6 +56,7 @@ function BookingDetail() {
             Check In
           </Button>
         )}
+        {status === "checked-in" && <CheckoutButton bookingId={bookingId} />}
         <Button variation="secondary" onClick={moveBack}>
           Back
         </Button>
