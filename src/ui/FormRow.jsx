@@ -1,10 +1,14 @@
 /* eslint-disable react/prop-types */
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 const StyledFormRow = styled.div`
   display: grid;
   align-items: center;
-  grid-template-columns: 24rem 1fr 1.2fr;
+  ${(props) =>
+    !props.vertical &&
+    css`
+      grid-template-columns: 24rem 1fr 1.2fr;
+    `}
   gap: 2.4rem;
 
   padding: 1.2rem 0;
@@ -37,9 +41,9 @@ const Error = styled.span`
   color: var(--color-red-700);
 `;
 
-const FormRow = ({ label, children, error, id }) => {
+const FormRow = ({ label, children, error, id, vertical = false }) => {
   return (
-    <StyledFormRow>
+    <StyledFormRow vertical={vertical}>
       <Label htmlFor={id}>{label}</Label>
       {children} {error && <Error>{error}</Error>}
     </StyledFormRow>
