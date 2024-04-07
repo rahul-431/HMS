@@ -13,15 +13,7 @@ function LoginForm() {
   function handleSubmit(e) {
     e.preventDefault();
     if (!email || !password) return;
-    loginUser(
-      { email, password },
-      {
-        onSettled: () => {
-          setPassword("");
-          setEmail("");
-        },
-      }
-    );
+    loginUser({ email, password });
   }
   return (
     <Form onSubmit={handleSubmit}>
