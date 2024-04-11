@@ -7,7 +7,6 @@ import Spinner from "../../ui/Spinner";
 import toast from "react-hot-toast";
 import _ from "lodash";
 import Pagination from "../../ui/Pagination";
-// import { useSearchParams } from "react-router-dom";
 function BookingTable() {
   const { bookings, isLoading, error, count } = useBookings();
 
