@@ -17,6 +17,7 @@ import CheckoutButton from "../check-in-out/CheckoutButton";
 import Modal from "../../ui/Modal";
 import ConfirmAction from "../../ui/ConfirmAction";
 import useDeleteBooking from "./useDeleteBooking";
+import Empty from "../../ui/Empty";
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -29,7 +30,7 @@ function BookingDetail() {
   const { deleteBookingFn, isDeleting } = useDeleteBooking();
   const navigate = useNavigate();
   const moveBack = useMoveBack();
-  if (_.isUndefined(booking)) return null;
+  if (_.isUndefined(booking)) return <Empty resource="Booking" />;
   const { status, id: bookingId } = booking;
   const statusToTagName = {
     unconfirmed: "blue",

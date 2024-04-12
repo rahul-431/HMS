@@ -1,9 +1,15 @@
 /* eslint-disable react/prop-types */
-import { cloneElement, createContext, useContext, useState } from "react";
+import {
+  cloneElement,
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 import { HiXMark } from "react-icons/hi2";
 import styled from "styled-components";
-import useClickOutsideModal from "../hooks/useClickOutsideModal";
 
 const StyledModal = styled.div`
   position: fixed;
@@ -71,8 +77,22 @@ function Open({ children, opens: opensWindowName }) {
 }
 function Window({ name, children }) {
   const { openName, close } = useContext(ModalContext);
-  const ref = useClickOutsideModal(close);
+  const ref = useRef();
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        console.log("Clicked outside");
+        close();
+      }
+    };
+    if (name === openName) {
+      document.addEventListener("mousedown", handleClick);
+    } else {
+      document.removeEventListener("mousedown", handleClick);
+    }
 
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [close, name, openName]);
   if (name !== openName) return null;
   return createPortal(
     <Overlay>

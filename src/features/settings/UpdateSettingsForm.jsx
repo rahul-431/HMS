@@ -7,12 +7,16 @@ import Spinner from "../../ui/Spinner";
 import Button from "../../ui/Button";
 import useUpdateSetting from "./useUpdateSetting";
 function UpdateSettingsForm() {
-  const { settings, isLoading } = useSetting();
-  console.log(settings);
-  const settingData = settings ? settings : {};
-  const { handleSubmit, register } = useForm({
-    defaultValues: settingData,
-  });
+  const {
+    settings: {
+      minBookingLength,
+      maxBookingLength,
+      maxGuestPerBooking,
+      breakFastPrice,
+    } = {},
+    isLoading,
+  } = useSetting();
+  const { handleSubmit, register } = useForm();
 
   const { updateSettingFn, isUpdating } = useUpdateSetting();
   const handleSettingUpdate = (data) => {
@@ -25,6 +29,7 @@ function UpdateSettingsForm() {
         <Input
           type="number"
           id="minBookingLength"
+          defaultValue={minBookingLength}
           {...register("minBookingLength")}
         />
       </FormRow>
@@ -32,6 +37,7 @@ function UpdateSettingsForm() {
         <Input
           type="number"
           id="maxBookingLength"
+          defaultValue={maxBookingLength}
           {...register("maxBookingLength")}
         />
       </FormRow>
@@ -39,6 +45,7 @@ function UpdateSettingsForm() {
         <Input
           type="number"
           id="maxGuestPerBooking"
+          defaultValue={maxGuestPerBooking}
           {...register("maxGuestPerBooking")}
         />
       </FormRow>
@@ -46,6 +53,7 @@ function UpdateSettingsForm() {
         <Input
           type="number"
           id="breakFastPrice"
+          defaultValue={breakFastPrice}
           {...register("breakFastPrice")}
         />
       </FormRow>

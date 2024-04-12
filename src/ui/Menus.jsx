@@ -1,9 +1,8 @@
 /* eslint-disable react/prop-types */
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { HiEllipsisVertical } from "react-icons/hi2";
 import styled from "styled-components";
-import useClickOutsideModal from "../hooks/useClickOutsideModal";
 
 const Menu = styled.div`
   display: flex;
@@ -82,6 +81,8 @@ function Menus({ children }) {
 function Toggle({ id }) {
   const { openId, open, close, setPosition } = useContext(MenusContext);
   function handleClick(e) {
+    e.stopPropagation();
+
     const rect = e.target.closest("button").getBoundingClientRect();
     setPosition({
       x: window.innerWidth - rect.width - rect.x,
@@ -95,10 +96,22 @@ function Toggle({ id }) {
     </StyledToggle>
   );
 }
-function List({ id, children, close }) {
-  const { openId, position } = useContext(MenusContext);
-  //this handle close outside need to be fixed
-  const { ref } = useClickOutsideModal(close);
+function List({ id, children }) {
+  const { openId, position, close } = useContext(MenusContext);
+  const ref = useRef();
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        close();
+      }
+    };
+    if (id === openId) {
+      document.addEventListener("click", handleClick, false);
+    } else {
+      document.removeEventListener("click", handleClick, false);
+    }
+    return () => document.removeEventListener("click", handleClick, false);
+  }, [close, id, openId]);
   if (openId !== id) return null;
   return createPortal(
     <StyledList position={position} ref={ref}>

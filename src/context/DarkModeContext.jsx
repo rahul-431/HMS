@@ -3,7 +3,12 @@ import { createContext, useContext, useEffect } from "react";
 import { useLocalStorageState } from "../hooks/useLocalStorageState";
 const DarkModeContext = createContext();
 function DarkModeProvider({ children }) {
-  const [isDarkMode, setIsDarkMode] = useLocalStorageState(false, "isDarkMode");
+  const [isDarkMode, setIsDarkMode] = useLocalStorageState(
+    // detect the window itself as a darkmode or not according
+    // to that it automatically converted to darkmode
+    window.matchMedia("prefers-color-scheme:dark").matches,
+    "isDarkMode"
+  );
 
   useEffect(() => {
     if (isDarkMode) {
