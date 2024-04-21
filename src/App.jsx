@@ -80,7 +80,7 @@ const App = () => {
         />
       </QueryClientProvider>
     </DarkModeProvider>
-  );
+
 };
 
 export default App;
