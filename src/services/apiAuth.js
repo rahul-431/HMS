@@ -28,25 +28,6 @@ export async function logout() {
     throw new Error(error.message);
   }
 }
-// export async function signUp({ email, password, fullName }) {
-//   const { data, error } = await supabase.auth.signUp({
-//     email,
-//     password,
-//     options: {
-//       data: {
-//         fullName,
-//         avatar: "",
-//       },
-//     },
-//   });
-
-//   if (error) {
-//     console.log(error);
-//     throw new Error(error.message);
-//   }
-//   console.log(data);
-//   return data;
-// }
 export async function signUp({ email, password, fullName }) {
   const response = await fetch(`${baseUrl}/users/`, {
     method: "POST",

@@ -19,6 +19,7 @@ export async function deleteRoom(id) {
   return data;
 }
 export async function createRoom(newCabin) {
+  console.log(newCabin);
   console.log("image Name:", newCabin.image);
   const hasImagePath = newCabin.image?.startsWith?.(supabaseUrl);
   const imageName = `${Math.random()}-${newCabin.image.name}`.replaceAll(

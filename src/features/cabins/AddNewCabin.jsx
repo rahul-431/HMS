@@ -1,16 +1,12 @@
 import Button from "../../ui/Button";
 import CreateCabinForm from "./CreateCabinForm";
 import Modal from "../../ui/Modal";
-// import { HiOutlinePlus } from "react-icons/hi2";
 
 const AddNewCabin = () => {
   return (
     <Modal>
       <Modal.Open opens="cabin-form">
-        <Button>
-          Add New Cabin
-          {/* <HiOutlinePlus /> */}
-        </Button>
+        <Button>Add New Room</Button>
       </Modal.Open>
       <Modal.Window name="cabin-form">
         <CreateCabinForm />

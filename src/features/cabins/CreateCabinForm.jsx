@@ -4,17 +4,51 @@ import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
-import Textarea from "../../ui/Textarea";
 import FormRow from "../../ui/FormRow";
 import useCreateCabin from "./useCreateCabin";
+import { useState } from "react";
+import styled from "styled-components";
+import { HiXMark } from "react-icons/hi2";
 
+const StyledOptionContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+  width: 100%;
+`;
+const StyledOption = styled.div`
+  border: 1px solid gray;
+  margin-left: 5px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  padding: 8px;
+  cursor: pointer;
+  &:hover {
+    border-color: blue;
+  }
+`;
 function CreateCabinForm({ closeModal }) {
-  const { register, handleSubmit, getValues, formState } = useForm();
+  const { register, handleSubmit, formState } = useForm();
   const { errors } = formState;
   const { createCabin, isCreating } = useCreateCabin();
+  const [selectedFacilities, setSelectedFacilities] = useState([]);
+  const facilitiesOptions = [
+    "Wifi",
+    "Laundry",
+    "Baathroom",
+    "Parking",
+    "Television",
+    "Telephone",
+    "Wardrobe",
+    "Air Conditioning(AC)",
+    "Safe",
+  ];
   const handleCabinFormSubmit = (data) => {
     createCabin(
-      { ...data, image: data.image[0] },
+      { ...data, image: data.image[0], facilities: selectedFacilities },
       {
         onSuccess: () => {
           closeModal?.();
@@ -25,16 +59,33 @@ function CreateCabinForm({ closeModal }) {
   const onError = (errors) => {
     console.log(errors);
   };
+  const clear = () => {
+    selectedFacilities.length = 0;
+  };
+
+  const handleOptionClick = (facility) => {
+    setSelectedFacilities((prevFacilities) => {
+      if (!prevFacilities.includes(facility)) {
+        return [...prevFacilities, facility];
+      }
+      return prevFacilities;
+    });
+  };
+
   return (
     <Form
       onSubmit={handleSubmit(handleCabinFormSubmit, onError)}
       type={closeModal ? "modal" : "regular"}
     >
-      <FormRow label="Cabin Name" error={errors?.name?.message} id="name">
+      <FormRow
+        label="Room Number"
+        error={errors?.roomNumber?.message}
+        id="roomNumber"
+      >
         <Input
           type="text"
-          id="name"
-          {...register("name", {
+          id="roomNumber"
+          {...register("roomNumber", {
             required: "This Field is required",
           })}
         />
@@ -61,53 +112,71 @@ function CreateCabinForm({ closeModal }) {
           })}
         />
       </FormRow>
-
-      <FormRow
-        id="regularPrice"
-        label="regularPrice"
-        error={errors?.regularPrice?.message}
+      <div
+        style={{
+          marginTop: "6px",
+          marginBottom: "5px",
+          display: "flex",
+          gap: "18rem",
+        }}
       >
-        <Input
-          type="number"
-          id="regularPrice"
-          {...register("regularPrice", {
-            required: "This Field is required",
-            min: {
-              value: 1,
-              message: "Regular Price should be at least 1",
-            },
-          })}
-        />
-      </FormRow>
-
-      <FormRow id="discount" error={errors?.discount?.message} label="Discount">
-        <Input
-          type="number"
-          id="discount"
-          defaultValue={0}
-          {...register("discount", {
-            required: "This Field is required",
-            validate: (value) =>
-              value <= getValues().regularPrice ||
-              "Discount should be less than regular price",
-          })}
-        />
-      </FormRow>
-
-      <FormRow
-        id="description"
-        error={errors?.description?.message}
-        label="Description"
-      >
-        <Textarea
-          type="number"
-          id="description"
-          defaultValue=""
-          {...register("description", {
-            required: "This Field is required",
-          })}
-        />
-      </FormRow>
+        <label
+          htmlFor="facilitiesInput"
+          style={{
+            display: "block",
+            marginBottom: "10px",
+            fontWeight: "bold",
+            fontSize: "15px",
+            fontFamily: "sans-serif",
+          }}
+        >
+          Select Facilities
+        </label>
+        <div>
+          <input
+            style={{
+              width: "500px",
+              padding: "10px",
+              marginBottom: "10px",
+              marginLeft: "5px",
+              border: "1px solid #ccc",
+              borderRadius: "8px",
+              color: "black",
+            }}
+            type="text"
+            id="facilitiesInput"
+            name="facilities"
+            value={selectedFacilities.join(", ")}
+            readOnly
+            placeholder="Select facilities..."
+            required
+          />
+          <button
+            style={{
+              marginLeft: "5px",
+              fontSize: "16px",
+              padding: "0.4rem",
+              alignItems: "center",
+              background: "none",
+              border: "1px solid gray",
+              borderRadius: "5px",
+            }}
+            onClick={clear}
+          >
+            <HiXMark />
+          </button>
+          <StyledOptionContainer id="optionsContainer">
+            {facilitiesOptions.map((facility, index) => (
+              <StyledOption
+                key={index}
+                onClick={() => handleOptionClick(facility)}
+              >
+                {facility}
+              </StyledOption>
+            ))}
+          </StyledOptionContainer>
+        </div>
+      </div>
 
       <FormRow label="Image" id="image" error={errors?.image?.message}>
         <FileInput
