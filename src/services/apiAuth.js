@@ -1,5 +1,5 @@
 import supabase, { supabaseUrl } from "./supabase";
-
+const baseUrl = import.meta.env.VITE_BASE_URL;
 export async function login({ email, password }) {
   console.log("at api auth", email, password);
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -28,24 +28,45 @@ export async function logout() {
     throw new Error(error.message);
   }
 }
-export async function signUp({ email, password, fullName }) {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        fullName,
-        avatar: "",
-      },
-    },
-  });
+// export async function signUp({ email, password, fullName }) {
+//   const { data, error } = await supabase.auth.signUp({
+//     email,
+//     password,
+//     options: {
+//       data: {
+//         fullName,
+//         avatar: "",
+//       },
+//     },
+//   });
 
-  if (error) {
-    console.log(error);
-    throw new Error(error.message);
-  }
-  console.log(data);
-  return data;
+//   if (error) {
+//     console.log(error);
+//     throw new Error(error.message);
+//   }
+//   console.log(data);
+//   return data;
+// }
+export async function signUp({ email, password, fullName }) {
+  const response = await fetch(`${baseUrl}/users/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      password,
+      fullName,
+    }),
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("network response was not okay");
+      }
+      return res.json();
+    })
+    .catch((error) => console.log("Error while registering new user ", error));
+  return response.data;
 }
 export async function updateCurrentUser({ fullName, avatar, password }) {
   //1. Update fullname or password
@@ -75,4 +96,33 @@ export async function updateCurrentUser({ fullName, avatar, password }) {
     });
   if (updateUserAvatarError) throw new Error(updateUserAvatarError.message);
   return updatedUserAvatar;
+}
+export async function getUsers() {
+  const response = await fetch(`${baseUrl}/users/`)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to fetch users");
+      }
+      return res.json();
+    })
+    .catch((error) => console.log("Error while fething users", error));
+  console.log(response);
+  return response;
+}
+export async function deleteUser(id) {
+  console.log(id);
+  const response = await fetch(`${baseUrl}/users/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-type": "application/json",
+    },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to delete user");
+      }
+      return res.json();
+    })
+    .catch((error) => console.log(error));
+  return response;
 }

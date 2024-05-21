@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useForm } from "react-hook-form";
 import Button from "../../ui/Button";
 import Form from "../../ui/Form";
@@ -7,13 +8,10 @@ import useSignup from "./useSignup";
 
 // Email regex: /\S+@\S+\.\S+/
 
-function SignupForm() {
-  const { register, handleSubmit, formState, getValues, reset } = useForm();
+function SignupForm({ closeModal }) {
+  const { register, handleSubmit, formState, getValues } = useForm();
   const { errors } = formState;
   const { signup, isSigningUp } = useSignup();
-  // const onError = (errors) => {
-  //   console.log(errors);
-  // };
   const onSignup = (data) => {
     if (!data) return null;
     const { email, password, fullName } = data;
@@ -21,13 +19,16 @@ function SignupForm() {
       { email, password, fullName },
       {
         onSuccess: () => {
-          reset();
+          closeModal?.();
         },
       }
     );
   };
   return (
-    <Form onSubmit={handleSubmit(onSignup)}>
+    <Form
+      onSubmit={handleSubmit(onSignup)}
+      type={closeModal ? "modal" : "regular"}
+    >
       <FormRow
         label="Full name"
         error={errors?.fullName?.message}
@@ -92,7 +93,7 @@ function SignupForm() {
 
       <FormRow>
         {/* type is an HTML attribute! */}
-        <Button variation="secondary" type="reset">
+        <Button variation="danger" type="reset" onClick={() => closeModal?.()}>
           Cancel
         </Button>
         <Button type="submit" disabled={isSigningUp}>
