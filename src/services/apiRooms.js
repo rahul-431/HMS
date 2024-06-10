@@ -1,5 +1,5 @@
 import supabase, { supabaseUrl } from "./supabase";
-
+const baseUrl = import.meta.env.VITE_BASE_URL;
 export async function getRooms() {
   const { data, error } = await supabase.from("cabins").select("*");
   if (error) {
@@ -52,6 +52,50 @@ export async function createRoom(newCabin) {
     throw new Error("Room image could not be uploaded and room is not created");
   }
   return data;
+}
+export async function createRoomType({ name }) {
+  const response = await fetch(`${baseUrl}/rooms/type`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ name }),
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to create room type");
+      }
+      return res.json();
+    })
+    .catch((error) => {
+      console.log("Error while creating new user :", error);
+    });
+  return response.data;
+}
+export async function getRoomTypes() {
+  const response = await fetch(`${baseUrl}/rooms/type`)
+    .then((res) => {
+      if (!res.ok) throw new Error("Failed to fetch the room Types");
+      return res.json();
+    })
+    .catch((error) => {
+      console.log("Error while fetching room types", error);
+    });
+  return response.data;
+}
+export async function deleteRoomType(id) {
+  const response = await fetch(`${baseUrl}/rooms/type/${id}`, {
+    method: "Delete",
+    headers: {
+      "Content-Type": "applicaton/json",
+    },
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Failed to delete room type");
+      return res.json();
+    })
+    .catch((error) => console.log(error));
+  return response;
 }
 export async function updateRoom(editCabin) {
   // console.log(newCabin, id);

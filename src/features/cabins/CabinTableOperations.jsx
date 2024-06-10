@@ -2,10 +2,12 @@ import TableOperations from "../../ui/TableOperations";
 import Filter from "../../ui/Filter";
 import SortBy from "../../ui/SortBy";
 import AddNewCabin from "./AddNewCabin";
+import AddRoomTypeButton from "./AddRoomTypeButton";
 const CabinTableOperations = () => {
   return (
     <TableOperations>
       <AddNewCabin />
+      <AddRoomTypeButton />
       <Filter
         filterField="discount"
         options={[
