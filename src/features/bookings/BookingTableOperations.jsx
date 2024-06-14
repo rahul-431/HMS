@@ -1,10 +1,12 @@
 import SortBy from "../../ui/SortBy";
 import Filter from "../../ui/Filter";
 import TableOperations from "../../ui/TableOperations";
+import AddNewBooking from "./AddNewBooking";
 
 function BookingTableOperations() {
   return (
     <TableOperations>
+      <AddNewBooking />
       <Filter
         filterField="status"
         options={[

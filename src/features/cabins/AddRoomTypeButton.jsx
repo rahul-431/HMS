@@ -6,7 +6,7 @@ const AddRoomTypeButton = () => {
   return (
     <Modal>
       <Modal.Open opens="room-type-form">
-        <Button>Add Room Type</Button>
+        <Button>Add Category</Button>
       </Modal.Open>
       <Modal.Window name="room-type-form">
         <AddRoomType />

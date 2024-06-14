@@ -41,10 +41,19 @@ const Error = styled.span`
   color: var(--color-red-700);
 `;
 
-const FormRow = ({ label, children, error, id, vertical = false }) => {
+const FormRow = ({
+  label,
+  children,
+  error,
+  id,
+  vertical = false,
+  required = "0",
+}) => {
   return (
     <StyledFormRow vertical={vertical}>
-      <Label htmlFor={id}>{label}</Label>
+      <Label htmlFor={id}>
+        {label} {required === "1" && <span style={{ color: "red" }}> *</span>}
+      </Label>
       {children} {error && <Error>{error}</Error>}
     </StyledFormRow>
   );

@@ -7,10 +7,10 @@ function Bookings() {
   return (
     <>
       <Row type="horizontal">
-        <Heading as="h1">All bookings</Heading>
         <BookingTableOperations />
       </Row>
       <Row>
+        <Heading as="h3">All bookings</Heading>
         <BookingTable />
       </Row>
     </>

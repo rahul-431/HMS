@@ -16,7 +16,7 @@ function RoomTypeTable() {
   return (
     <Table columns="1fr 1fr">
       <Table.Header>
-        <div>RoomType</div>
+        <div>Category</div>
       </Table.Header>
       <Table.Body
         data={roomTypes}

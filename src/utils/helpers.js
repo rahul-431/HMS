@@ -27,3 +27,6 @@ export const formatCurrency = (value) =>
   new Intl.NumberFormat("en", { style: "currency", currency: "NPR" }).format(
     value
   );
+export const toCapitalize = (value) => {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+};

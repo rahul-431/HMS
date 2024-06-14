@@ -63,6 +63,12 @@ const MainNav = () => {
           </StyledNavLink>
         </li>
         <li>
+          <StyledNavLink to="/guest">
+            <HiOutlineHome />
+            <span>Guest</span>
+          </StyledNavLink>
+        </li>
+        <li>
           <StyledNavLink to="/bookings">
             <HiOutlineCalendarDays />
             <span>Bookings</span>
@@ -74,12 +80,7 @@ const MainNav = () => {
             <span>Rooms</span>
           </StyledNavLink>
         </li>
-        <li>
-          <StyledNavLink to="/roomTypes">
-            <HiOutlineHomeModern />
-            <span>Room Type</span>
-          </StyledNavLink>
-        </li>
+
         <li>
           <StyledNavLink to="/users">
             <HiOutlineUsers />

@@ -5,12 +5,11 @@ import Form from "../../ui/Form";
 import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import FormRow from "../../ui/FormRow";
-import useCreateCabin from "./useCreateCabin";
 import { useState } from "react";
 import styled from "styled-components";
 import { HiXMark } from "react-icons/hi2";
-import { StyledSelect } from "../../ui/Select";
-import useRoomType from "./useRoomType";
+// import { StyledSelect } from "../../ui/Select";
+import useCreateCabin from "../cabins/useCreateCabin";
 
 const StyledOptionContainer = styled.div`
   display: flex;
@@ -32,8 +31,7 @@ const StyledOption = styled.div`
     border-color: blue;
   }
 `;
-function CreateCabinForm({ closeModal }) {
-  const { roomTypes } = useRoomType();
+function BookingForm({ closeModal }) {
   const { register, handleSubmit, formState } = useForm();
   const { errors } = formState;
   const { createCabin, isCreating } = useCreateCabin();
@@ -98,7 +96,7 @@ function CreateCabinForm({ closeModal }) {
           })}
         />
       </FormRow>
-      <FormRow
+      {/* <FormRow
         label="Room Category"
         error={errors?.roomType?.message}
         id="roomType"
@@ -113,7 +111,7 @@ function CreateCabinForm({ closeModal }) {
             </option>
           ))}
         </StyledSelect>
-      </FormRow>
+      </FormRow> */}
 
       <FormRow
         label="Maximum capacity"
@@ -224,4 +222,4 @@ function CreateCabinForm({ closeModal }) {
   );
 }
 
-export default CreateCabinForm;
+export default BookingForm;

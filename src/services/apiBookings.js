@@ -33,6 +33,7 @@ export async function getBookings({ filter, sortBy, page }) {
     console.error(error);
     throw new Error("Bookings are not found");
   }
+  // console.log(data, count);
   return { data, count };
 }
 export async function getBooking(id) {

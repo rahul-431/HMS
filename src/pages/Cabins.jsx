@@ -9,13 +9,14 @@ function Cabins() {
       <Row type="horizontal">
         <CabinTableOperations />
       </Row>
-      <Row>
-        <Heading as="h3">Room Types</Heading>
-        <RoomTypeTable />
-      </Row>
+
       <Row>
         <Heading as="h3">All Rooms</Heading>
         <CabinTable />
+      </Row>
+      <Row>
+        <Heading as="h3">Room Category</Heading>
+        <RoomTypeTable />
       </Row>
     </>
   );

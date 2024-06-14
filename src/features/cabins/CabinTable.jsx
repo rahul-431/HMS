@@ -17,16 +17,24 @@ function CabinTable() {
   }
 
   //client side filtering
-  const filterValue = searchParam.get("discount") || "all";
+  const filterValue = searchParam.get("cb") || "all";
   let filteredCabins;
   if (filterValue === "all") filteredCabins = cabins;
-  if (filterValue === "no-discount")
-    filteredCabins = cabins.filter((cabin) => cabin.discount === 0);
-  if (filterValue === "with-discount")
-    filteredCabins = cabins.filter((cabin) => cabin.discount !== 0);
+  if (filterValue === "clean")
+    filteredCabins = cabins.filter((cabin) => cabin.cleanStatus === "Clean");
+  if (filterValue === "not-clean")
+    filteredCabins = cabins.filter(
+      (cabin) => cabin.cleanStatus === "Not Clean"
+    );
+  if (filterValue === "not-booked")
+    filteredCabins = cabins.filter(
+      (cabin) => cabin.roomStatus === "Not Booked"
+    );
+  if (filterValue === "booked")
+    filteredCabins = cabins.filter((cabin) => cabin.roomStatus === "Booked");
 
   //client side sorting feature
-  const sortBy = searchParam.get("sortBy") || "name-asc";
+  const sortBy = searchParam.get("sortBy") || "number-asc";
   const [field, direction] = sortBy.split("-");
   const modifier = direction === "asc" ? 1 : -1;
   const sortedCabins = filteredCabins.sort(
@@ -35,18 +43,20 @@ function CabinTable() {
   if (!cabins.length) return <Empty resource="cabins" />;
   return (
     <Menus>
-      <Table columns="0.6fr 1fr 1fr 1fr 1fr 1fr">
+      <Table columns="0.6fr 0.8fr 1fr 0.6fr 1fr 1fr 1fr 1fr">
         <Table.Header>
           <div></div>
-          <div>Name</div>
+          <div>Number</div>
+          <div>Category</div>
           <div>Capacity</div>
-          <div>Price</div>
-          <div>Discount</div>
+          <div>Clean Status</div>
+          <div>Room Status</div>
+          <div>Added By</div>
           <div></div>
         </Table.Header>
         <Table.Body
           data={sortedCabins}
-          render={(cabin) => <CabinRow cabin={cabin} key={cabin.id} />}
+          render={(cabin) => <CabinRow cabin={cabin} key={cabin._id} />}
         />
       </Table>
     </Menus>
