@@ -17,12 +17,13 @@ function GuestTable() {
 
   return (
     <Menus>
-      <Table columns="1fr 1fr 1fr 1fr 1fr">
+      <Table columns="1.2fr 1.4fr 1fr 1fr 0.6fr 0.6fr">
         <Table.Header>
           <div>Full Name</div>
           <div>Address</div>
           <div>Contact</div>
           <div>Nationality</div>
+          <div>Added By</div>
           <div></div>
         </Table.Header>
 

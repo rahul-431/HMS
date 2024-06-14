@@ -22,7 +22,7 @@ const StyledBookingDataBox = styled.section`
   overflow: hidden;
 `;
 
-const Header = styled.header`
+export const Header = styled.header`
   background-color: var(--color-brand-500);
   padding: 2rem 4rem;
   color: #e0e7ff;
@@ -52,7 +52,7 @@ const Header = styled.header`
   }
 `;
 
-const Section = styled.section`
+export const Section = styled.section`
   padding: 3.2rem 4rem 1.2rem;
 `;
 
@@ -95,11 +95,14 @@ const Price = styled.div`
   }
 `;
 
-const Footer = styled.footer`
+export const Footer = styled.footer`
   padding: 1.6rem 4rem;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   color: var(--color-grey-500);
   text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 // A purely presentational component

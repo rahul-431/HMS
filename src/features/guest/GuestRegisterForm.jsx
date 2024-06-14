@@ -6,11 +6,21 @@ import Button from "../../ui/Button";
 import FormRow from "../../ui/FormRow";
 import { StyledSelect } from "../../ui/Select";
 import useAddGuest from "./useAddGuest";
+import useEditGuest from "./useEditGuest";
+import SpinnerMini from "../../ui/SpinnerMini";
 
-function GuestRegisterForm({ closeModal }) {
-  const { register, handleSubmit, formState } = useForm();
-  const { errors } = formState;
+//using this form for both creating and editing
+function GuestRegisterForm({ closeModal, guest = {} }) {
   const { createGuest, isCreating } = useAddGuest();
+  const { editGuest, isEditing } = useEditGuest();
+  const isWorking = isCreating || isEditing;
+
+  const { _id: editId, ...editValues } = guest;
+  const isEditSession = Boolean(editId);
+  const { register, handleSubmit, formState } = useForm({
+    defaultValues: isEditSession ? editValues : {},
+  });
+  const { errors } = formState;
   const IdentityTypeOption = [
     { value: "citizenship", label: "Citizenship" },
     { value: "driving-liscence", label: "Driving Liscence" },
@@ -24,21 +34,26 @@ function GuestRegisterForm({ closeModal }) {
     { value: "other", label: "Other" },
   ];
   const handleCabinFormSubmit = (data) => {
-    createGuest(data, {
-      onSuccess: () => {
-        closeModal?.();
-      },
-    });
+    if (isEditSession) {
+      editGuest(
+        { newGuest: data, id: editId },
+        {
+          onSuccess: () => {
+            closeModal?.();
+          },
+        }
+      );
+    } else {
+      createGuest(data, {
+        onSuccess: () => {
+          closeModal?.();
+        },
+      });
+    }
   };
   const onError = (errors) => {
     console.log(errors);
   };
-  {
-    /* fullName requried address requried age not
-          identityType(Citizenship,driving liscence,pan card,aadhar dard,other)
-          IdentityTypeNumber, phoneNumber required nationality(default nepali
-          opt(nepali,indian,other)), occupation not */
-  }
 
   return (
     <Form
@@ -131,12 +146,29 @@ function GuestRegisterForm({ closeModal }) {
           {...register("identityTypeNumber")}
         />
       </FormRow>
+      <FormRow
+        label="Occupation"
+        error={errors?.occupation?.message}
+        id="occupation"
+      >
+        <Input type="text" id="occupation" {...register("occupation")} />
+      </FormRow>
       <FormRow>
         <Button variation="danger" type="reset" onClick={() => closeModal?.()}>
           Cancel
         </Button>
-        <Button type="submit" variation="primary" disabled={isCreating}>
-          Add
+        <Button type="submit" variation="primary" disabled={isWorking}>
+          {isEditSession ? (
+            isWorking ? (
+              <SpinnerMini />
+            ) : (
+              "Edit"
+            )
+          ) : isWorking ? (
+            <SpinnerMini />
+          ) : (
+            "Add"
+          )}
         </Button>
       </FormRow>
     </Form>

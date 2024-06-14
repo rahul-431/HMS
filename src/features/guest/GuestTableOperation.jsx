@@ -10,7 +10,7 @@ function GuestTableOperation() {
     <TableOperations>
       <AddNewGuest />
       <Heading as="h4" style={{ fontWeight: "normal" }}>
-        Search By(Name, Address, contact)
+        Search By(Name, Address)
       </Heading>
       <Search />
       <Filter

@@ -31,3 +31,47 @@ export async function addGuest(guest) {
     .catch((err) => console.log(err));
   return response.data;
 }
+export async function getGuest(id) {
+  const response = await fetch(`${baseUrl}/guests/${id}`)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to fetch the guest");
+      }
+      return res.json();
+    })
+    .catch((err) => console.log(err));
+  return response.data;
+}
+export async function deleteGuestApi(id) {
+  const response = await fetch(`${baseUrl}/guests/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "applicaton/json",
+    },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to delete the guest info");
+      }
+      return res.json();
+    })
+    .catch((err) => console.log(err));
+  return response;
+}
+export async function editGuestApi({ newGuest, id }) {
+  const response = await fetch(`${baseUrl}/guests/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(newGuest),
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to edit the guest");
+      }
+      return res.json();
+    })
+    .catch((err) => console.log(err));
+  return response.data;
+}
