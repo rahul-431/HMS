@@ -40,6 +40,7 @@ export async function getGuest(id) {
       return res.json();
     })
     .catch((err) => console.log(err));
+
   return response.data;
 }
 export async function deleteGuestApi(id) {

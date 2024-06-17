@@ -11,6 +11,8 @@ export default function useGuest() {
   } = useQuery({
     queryKey: ["guest", id],
     queryFn: () => getGuest(id),
+    retry: false,
   });
+
   return { guest, isLoading, error };
 }

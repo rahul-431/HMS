@@ -10,8 +10,9 @@ import { toCapitalize } from "../../utils/helpers";
 import ConfirmAction from "../../ui/ConfirmAction";
 import useDeleteGuest from "./useDeleteGuest";
 import GuestRegisterForm from "./GuestRegisterForm";
+import { Stacked } from "../bookings/BookingRow";
 const Div = styled.div`
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   color: var(--color-grey-600);
   font-family: "sono";
 `;
@@ -27,6 +28,7 @@ function GuestRow({ guest }) {
   const {
     _id: guestId,
     fullName,
+    email,
     address,
     phoneNumber,
     nationality,
@@ -34,7 +36,10 @@ function GuestRow({ guest }) {
   } = guest;
   return (
     <Table.Row>
-      <Div>{toCapitalize(fullName)}</Div>
+      <Stacked>
+        <span>{toCapitalize(fullName)}</span>
+        <span>{email ? email : "-"}</span>
+      </Stacked>
       <Div>{toCapitalize(address)}</Div>
       <Div>{phoneNumber}</Div>
       <Div>{toCapitalize(nationality)}</Div>

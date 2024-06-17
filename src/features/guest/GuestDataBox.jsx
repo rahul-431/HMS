@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
 import styled from "styled-components";
 import { Footer, Header, Section } from "../bookings/BookingDataBox";
-import { toCapitalize } from "../../utils/helpers";
-import { format } from "date-fns";
+import { formatDistanceFromNow, toCapitalize } from "../../utils/helpers";
+import { format, isToday } from "date-fns";
 import _ from "lodash";
+import { Stacked } from "../bookings/BookingRow";
 const StyledGuestDataBox = styled.section`
   /* Box */
   background-color: var(--color-grey-0);
@@ -28,6 +29,7 @@ const Div = styled.div`
 function GuestDataBox({ guest }) {
   const {
     fullName,
+    email,
     address,
     phoneNumber,
     age,
@@ -49,6 +51,9 @@ function GuestDataBox({ guest }) {
         <p>{toCapitalize(address)}</p>
       </Header>
       <Section>
+        <Div>
+          <p>Email: {email ? email : "....."}</p>
+        </Div>
         <Div>
           <p>Contact: {phoneNumber}</p>
         </Div>
@@ -78,8 +83,26 @@ function GuestDataBox({ guest }) {
         )}
       </Section>
       <Footer>
-        <p>Added at {format(new Date(createdAt), "EEE, MMM dd yyyy, p")}</p>
-        <p>Updated at {format(new Date(updatedAt), "EEE, MMM dd yyyy, p")}</p>
+        <Stacked>
+          <span>
+            {isToday(new Date(createdAt))
+              ? "Today"
+              : formatDistanceFromNow(createdAt)}
+          </span>
+          <span>
+            Added at {format(new Date(createdAt), "EEE, MMM dd yyyy, p")}
+          </span>
+        </Stacked>
+        <Stacked>
+          <span>
+            {isToday(new Date(updatedAt))
+              ? "Today"
+              : formatDistanceFromNow(updatedAt)}
+          </span>
+          <span>
+            Updated at {format(new Date(updatedAt), "EEE, MMM dd yyyy, p")}
+          </span>
+        </Stacked>
       </Footer>
     </StyledGuestDataBox>
   );

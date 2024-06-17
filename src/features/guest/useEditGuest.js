@@ -12,7 +12,8 @@ export default function useEditGuest() {
       queryClient.invalidateQueries({ queryKey: ["guest"] });
     },
     onError: (err) => {
-      toast.error(err.message);
+      toast.error("Failed to edit guest info");
+      console.log(err.message);
     },
   });
   return { editGuest, isEditing };

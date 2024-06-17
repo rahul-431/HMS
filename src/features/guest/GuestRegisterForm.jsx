@@ -70,6 +70,17 @@ function GuestRegisterForm({ closeModal, guest = {} }) {
           type="text"
           id="fullName"
           {...register("fullName", {
+            trim: true,
+            required: "This Field is required",
+          })}
+        />
+      </FormRow>
+      <FormRow label="Email" error={errors?.email?.message} id="email">
+        <Input
+          type="text"
+          id="email"
+          {...register("email", {
+            trim: true,
             required: "This Field is required",
           })}
         />
@@ -85,6 +96,7 @@ function GuestRegisterForm({ closeModal, guest = {} }) {
           type="text"
           id="address"
           {...register("address", {
+            trim: true,
             required: "This Field is required",
           })}
         />
@@ -99,6 +111,7 @@ function GuestRegisterForm({ closeModal, guest = {} }) {
           type="text"
           id="phoneNumber"
           {...register("phoneNumber", {
+            trim: true,
             required: "This Field is required",
           })}
         />
@@ -143,7 +156,7 @@ function GuestRegisterForm({ closeModal, guest = {} }) {
         <Input
           type="text"
           id="identityTypeNumber"
-          {...register("identityTypeNumber")}
+          {...register("identityTypeNumber", { trim: true })}
         />
       </FormRow>
       <FormRow
@@ -151,7 +164,13 @@ function GuestRegisterForm({ closeModal, guest = {} }) {
         error={errors?.occupation?.message}
         id="occupation"
       >
-        <Input type="text" id="occupation" {...register("occupation")} />
+        <Input
+          type="text"
+          id="occupation"
+          {...register("occupation", {
+            trim: true,
+          })}
+        />
       </FormRow>
       <FormRow>
         <Button variation="danger" type="reset" onClick={() => closeModal?.()}>

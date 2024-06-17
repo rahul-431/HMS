@@ -26,10 +26,12 @@ const Cabin = styled.div`
   font-family: "Sono";
 `;
 
-const Stacked = styled.div`
+export const Stacked = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
+  text-align: center;
+  align-items: center;
 
   & span:first-child {
     font-weight: 500;
