@@ -1,4 +1,4 @@
-const baseUrl = import.meta.env.VITE_BASE_URL;
+export const baseUrl = import.meta.env.VITE_BASE_URL;
 export async function getGuests({ filter, page, search }) {
   const response = await fetch(
     `${baseUrl}/guests?page=${page}&filter=${filter}&search=${search}`
@@ -70,6 +70,17 @@ export async function editGuestApi({ newGuest, id }) {
     .then((res) => {
       if (!res.ok) {
         throw new Error("Failed to edit the guest");
+      }
+      return res.json();
+    })
+    .catch((err) => console.log(err));
+  return response.data;
+}
+export async function searchGuest(query) {
+  const response = await fetch(`${baseUrl}/guests/search/${query}`)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Fetching failed");
       }
       return res.json();
     })

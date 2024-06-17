@@ -1,5 +1,6 @@
 import { PAGE_SIZE } from "../utils/constants";
 import { getToday } from "../utils/helpers";
+import { baseUrl } from "./apiGuest";
 import supabase from "./supabase";
 
 export async function getBookings({ filter, sortBy, page }) {
@@ -128,4 +129,21 @@ export async function deleteBooking(id) {
     throw new Error("Booking could not be deleted");
   }
   return data;
+}
+export async function addBooking(newBooking) {
+  const response = await fetch(`${baseUrl}/bookings`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(newBooking),
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to add new Booking");
+      }
+      return res.json();
+    })
+    .catch((err) => console.log(err));
+  return response.data;
 }

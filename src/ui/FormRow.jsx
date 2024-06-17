@@ -44,7 +44,7 @@ const Error = styled.span`
 const FormRow = ({
   label,
   children,
-  error,
+  error = "",
   id,
   vertical = false,
   required = "0",

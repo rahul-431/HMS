@@ -3,222 +3,308 @@ import { useForm } from "react-hook-form";
 import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
-import FileInput from "../../ui/FileInput";
 import FormRow from "../../ui/FormRow";
-import { useState } from "react";
+import { StyledSelect } from "../../ui/Select";
+import Textarea from "../../ui/Textarea";
+import useCabin from "../cabins/useCabin";
+import Heading from "../../ui/Heading";
+import Row from "../../ui/Row";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { HiXMark } from "react-icons/hi2";
-// import { StyledSelect } from "../../ui/Select";
-import useCreateCabin from "../cabins/useCreateCabin";
-
-const StyledOptionContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  padding-top: 10px;
-  padding-bottom: 10px;
+import useSearchGuest from "./useSearchGuest";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import ButtonText from "../../ui/ButtonText";
+import useCreateBooking from "./useCreateBooking";
+const Ul = styled.ul`
+  position: fixed;
+  background-color: var(--color-grey-0);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--border-radius-md);
+  border-color: blue;
+  right: ${(props) => props.position.x}px;
+  top: ${(props) => props.position.y}px;
+  list-style: none;
+  width: 400px;
+  /* width: 100%; */
   max-height: 150px;
   overflow-y: auto;
-  width: 100%;
-`;
-const StyledOption = styled.div`
-  border: 1px solid gray;
-  margin-left: 5px;
-  margin-bottom: 10px;
-  border-radius: 12px;
-  padding: 8px;
-  cursor: pointer;
-  &:hover {
-    border-color: blue;
+  z-index: 1000;
+
+  & li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+    cursor: pointer;
+  }
+
+  & li:hover {
+    background-color: var(--color-grey-400);
   }
 `;
 function BookingForm({ closeModal }) {
-  const { register, handleSubmit, formState } = useForm();
-  const { errors } = formState;
-  const { createCabin, isCreating } = useCreateCabin();
-  const [selectedFacilities, setSelectedFacilities] = useState([]);
-  const facilitiesOptions = [
-    "Wifi",
-    "Laundry",
-    "Baathroom",
-    "Parking",
-    "Television",
-    "Telephone",
-    "Wardrobe",
-    "Air Conditioning(AC)",
-    "Safe",
-  ];
-  const handleCabinFormSubmit = (data) => {
-    const { roomNumber, roomType, capacity, images } = data;
-    const formData = new FormData();
-    formData.append("roomNumber", roomNumber);
-    formData.append("roomType", roomType);
-    formData.append("capacity", capacity);
-    formData.append("roomImage", images);
-    formData.append("facilities", selectedFacilities);
+  const navigate = useNavigate();
+  const [searchParam, setSearchParam] = useSearchParams();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm();
+  const { createBooking, isCreating } = useCreateBooking();
+  const moveBack = () => {
+    navigate("/bookings");
+  };
+  const { cabins } = useCabin();
+  const { searchedGuest } = useSearchGuest();
 
-    createCabin(formData, {
+  //for searching guest by name and options are displayed in the list
+  // once confirmed which guest need to be booked then click on it and it add the id
+  //to the data
+  const [showOptions, setShowOptions] = useState(false);
+  const [query, setQuery] = useState(searchParam.get("search") || "");
+
+  //calculate the position of input field and then display list according to that position
+  const [position, setPosition] = useState({});
+
+  // Watch maleNumber and femaleNumber to calculate total guest number
+  const maleNumber = watch("maleNumber", 0);
+  const femaleNumber = watch("femaleNumber", 0);
+
+  useEffect(() => {
+    // Calculate total and set it
+    const total = parseInt(maleNumber || 0) + parseInt(femaleNumber || 0);
+    setValue("total", total);
+  }, [maleNumber, femaleNumber, setValue]);
+
+  const onInputChange = (e) => {
+    setQuery(e.target.value);
+    searchParam.set("search", e.target.value);
+    setSearchParam(searchParam);
+  };
+
+  const onOptionClick = (option) => {
+    const { fullName, _id } = option;
+    setValue("guestId", _id);
+    setQuery(fullName);
+    setShowOptions(false);
+  };
+
+  const onFocus = (e) => {
+    const rect = e.target.closest("input").getBoundingClientRect();
+    setPosition({
+      x: window.innerWidth - rect.width - rect.x,
+      y: rect.y + rect.height + 8,
+    });
+    setShowOptions(true);
+  };
+  const handleBookingFormSubmit = (data) => {
+    createBooking(data, {
       onSuccess: () => {
-        closeModal?.();
+        moveBack();
       },
     });
   };
   const onError = (errors) => {
     console.log(errors);
   };
-  const clear = () => {
-    selectedFacilities.length = 0;
-  };
-
-  const handleOptionClick = (facility) => {
-    setSelectedFacilities((prevFacilities) => {
-      if (!prevFacilities.includes(facility)) {
-        return [...prevFacilities, facility];
-      }
-      return prevFacilities;
-    });
-  };
 
   return (
-    <Form
-      onSubmit={handleSubmit(handleCabinFormSubmit, onError)}
-      type={closeModal ? "modal" : "regular"}
-    >
-      <FormRow
-        label="Room Number"
-        error={errors?.roomNumber?.message}
-        id="roomNumber"
+    <>
+      <Row type="horizontal">
+        <Heading as="h3">Add New Booking</Heading>
+        <ButtonText onClick={moveBack}>&larr; Back</ButtonText>
+      </Row>
+      <Form
+        onSubmit={handleSubmit(handleBookingFormSubmit, onError)}
+        type={closeModal ? "modal" : "regular"}
       >
-        <Input
-          type="text"
-          id="roomNumber"
-          {...register("roomNumber", {
-            required: "This Field is required",
-          })}
-        />
-      </FormRow>
-      {/* <FormRow
-        label="Room Category"
-        error={errors?.roomType?.message}
-        id="roomType"
-      >
-        <StyledSelect
-          id="roomType"
-          {...register("roomType", { required: "This field is required" })}
+        <FormRow
+          label="Checkin Date"
+          error={errors?.checkInDate?.message}
+          id="checkInDate"
+          required="1"
         >
-          {roomTypes.map((opt) => (
-            <option value={opt._id} key={opt._id}>
-              {opt.name}
-            </option>
-          ))}
-        </StyledSelect>
-      </FormRow> */}
-
-      <FormRow
-        label="Maximum capacity"
-        error={errors?.capacity?.message}
-        id="capacity"
-      >
-        <Input
-          type="number"
-          id="capacity"
-          {...register("capacity", {
-            required: "This Field is required",
-            min: {
-              value: 1,
-              message: "Capacity should be at least 1",
-            },
-            max: {
-              value: 10,
-              message: "Capacity should less or equal to 10",
-            },
-          })}
-        />
-      </FormRow>
-      <div
-        style={{
-          marginTop: "6px",
-          marginBottom: "5px",
-          display: "flex",
-          gap: "18rem",
-        }}
-      >
-        <label
-          htmlFor="facilitiesInput"
-          style={{
-            display: "block",
-            marginBottom: "10px",
-            fontWeight: "bold",
-            fontSize: "15px",
-            fontFamily: "sans-serif",
-          }}
-        >
-          Select Facilities
-        </label>
-        <div>
-          <input
-            style={{
-              width: "500px",
-              padding: "10px",
-              marginBottom: "10px",
-              marginLeft: "5px",
-              border: "1px solid #ccc",
-              borderRadius: "8px",
-              color: "black",
-            }}
-            type="text"
-            id="facilitiesInput"
-            name="facilities"
-            value={selectedFacilities.join(", ")}
-            readOnly
-            placeholder="Select facilities..."
-            required
+          <Input
+            type="datetime-local"
+            id="checkInDate"
+            {...register("checkInDate", {
+              required: "This Field is required",
+            })}
           />
-          <button
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              padding: "0.4rem",
-              alignItems: "center",
-              background: "none",
-              border: "1px solid gray",
-              borderRadius: "5px",
-            }}
-            onClick={clear}
+        </FormRow>
+        <FormRow
+          label="Checkout Date"
+          error={errors?.checkoutDate?.message}
+          id="checkoutDate"
+          required="1"
+        >
+          <Input
+            type="datetime-local"
+            id="checkoutDate"
+            {...register("checkoutDate", {
+              required: "This Field is required",
+            })}
+          />
+        </FormRow>
+        <FormRow
+          label="Select Room"
+          error={errors?.roomNumber?.message}
+          id="roomNumber"
+          required="1"
+        >
+          <StyledSelect
+            id="roomNumber"
+            {...register("roomNumber", { required: "This field is required" })}
           >
-            <HiXMark />
-          </button>
-          <StyledOptionContainer id="optionsContainer">
-            {facilitiesOptions.map((facility, index) => (
-              <StyledOption
-                key={index}
-                onClick={() => handleOptionClick(facility)}
-              >
-                {facility}
-              </StyledOption>
+            {cabins?.map((opt) => (
+              <option value={opt._id} key={opt._id}>
+                {opt.roomNumber}
+              </option>
             ))}
-          </StyledOptionContainer>
-        </div>
-      </div>
-
-      <FormRow label="Image" id="images" error={errors?.image?.message}>
-        <FileInput
-          id="images"
-          accept="image/*"
-          {...register("images", {
-            required: "This Field is required",
-          })}
-        />
-      </FormRow>
-
-      <FormRow>
-        <Button variation="danger" type="reset" onClick={() => closeModal?.()}>
-          Cancel
-        </Button>
-        <Button type="submit" variation="primary" disabled={isCreating}>
-          Create cabin
-        </Button>
-      </FormRow>
-    </Form>
+          </StyledSelect>
+        </FormRow>
+        <FormRow
+          label="Select Guest"
+          error={errors?.guestId?.message}
+          id="guestId"
+          required="1"
+        >
+          <Input
+            type="text"
+            id="guestId"
+            {...register("guestId")}
+            value={query}
+            onChange={onInputChange}
+            onFocus={onFocus}
+            autoComplete="off"
+          />
+          {showOptions && searchedGuest?.length > 0 && (
+            <Ul position={position}>
+              {searchedGuest?.map((option, index) => (
+                <li key={index} onClick={() => onOptionClick(option)}>
+                  <span>{option?.fullName}</span>
+                  <span>{option?.phoneNumber}</span>
+                </li>
+              ))}
+            </Ul>
+          )}
+        </FormRow>
+        <FormRow
+          label="Male"
+          id="maleNumber"
+          error={errors?.maleNumber?.message}
+        >
+          <Input
+            type="number"
+            id="maleNumber"
+            {...register("maleNumber", {
+              min: {
+                value: 1,
+                message: "Value should be at least 1",
+              },
+            })}
+          />
+        </FormRow>
+        <FormRow
+          label="Female"
+          id="femaleNumber"
+          error={errors?.femaleNumber?.message}
+        >
+          <Input
+            type="number"
+            id="femaleNumber"
+            {...register("femaleNumber", {
+              min: {
+                value: 1,
+                message: "Value should be at least 1",
+              },
+            })}
+          />
+        </FormRow>
+        <FormRow
+          label="Total Guest"
+          id="totalGuest"
+          error={errors?.totalGuest?.message}
+        >
+          <Input
+            type="number"
+            id="totalGuest"
+            defaultValue={0}
+            disabled
+            {...register("totalGuest", {
+              min: {
+                value: 1,
+                message: "Value should be at least 1",
+              },
+            })}
+          />
+        </FormRow>
+        <FormRow label="Relation" id="relation">
+          <Input type="text" id="relation" {...register("relation")} />
+        </FormRow>
+        <FormRow
+          label="Vehicle Info"
+          error={errors?.vehicleNumber?.message}
+          id="vehicleNumber"
+        >
+          <Input
+            type="text"
+            id="vehicleNumber"
+            {...register("vehicleNumber")}
+          />
+        </FormRow>
+        <FormRow
+          label="Room Charge"
+          error={errors?.roomCharge?.message}
+          id="roomCharge"
+          required="1"
+        >
+          <Input
+            type="number"
+            id="roomCharge"
+            {...register("roomCharge", {
+              required: "This Field is required",
+            })}
+          />
+        </FormRow>
+        <FormRow label="Extra Charge" id="extraCharge">
+          <Input type="number" id="extraCharge" {...register("extraCharge")} />
+        </FormRow>
+        <FormRow
+          label="Paid Status"
+          error={errors?.isPaid?.message}
+          id="isPaid"
+          required="1"
+        >
+          <StyledSelect id="isPaid" {...register("isPaid")}>
+            <option value={true} selected>
+              Paid
+            </option>
+            <option value={false}>Due</option>
+          </StyledSelect>
+        </FormRow>
+        <FormRow label="Other Info" id="observation">
+          <Textarea id="observation" {...register("observation")} />
+        </FormRow>
+        <FormRow>
+          <Button variation="secondary" type="reset" onClick={moveBack}>
+            Back
+          </Button>
+          <Button
+            variation="danger"
+            type="reset"
+            onClick={() => closeModal?.()}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" variation="primary" disabled={isCreating}>
+            Add
+          </Button>
+        </FormRow>
+      </Form>
+    </>
   );
 }
 

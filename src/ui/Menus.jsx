@@ -29,7 +29,7 @@ const StyledToggle = styled.button`
   }
 `;
 
-const StyledList = styled.ul`
+export const StyledList = styled.ul`
   position: fixed;
 
   background-color: var(--color-grey-0);

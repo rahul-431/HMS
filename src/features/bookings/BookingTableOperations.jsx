@@ -1,12 +1,16 @@
 import SortBy from "../../ui/SortBy";
 import Filter from "../../ui/Filter";
 import TableOperations from "../../ui/TableOperations";
-import AddNewBooking from "./AddNewBooking";
+// import AddNewBooking from "./AddNewBooking";
+import Button from "../../ui/Button";
+import { useNavigate } from "react-router-dom";
 
 function BookingTableOperations() {
+  const navigate = useNavigate();
   return (
     <TableOperations>
-      <AddNewBooking />
+      {/* <AddNewBooking /> */}
+      <Button onClick={() => navigate("/addBooking")}>Add Booking</Button>
       <Filter
         filterField="status"
         options={[
