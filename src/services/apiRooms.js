@@ -1,7 +1,7 @@
 import supabase from "./supabase";
 const baseUrl = import.meta.env.VITE_BASE_URL;
-export async function getRooms() {
-  const response = await fetch(`${baseUrl}/rooms`)
+export async function getRooms(isBooking = false) {
+  const response = await fetch(`${baseUrl}/rooms/${isBooking}`)
     .then((res) => {
       if (!res.ok) throw new Error("Failed to fetch rooms");
       return res.json();

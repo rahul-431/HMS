@@ -1,16 +1,22 @@
-import SortBy from "../../ui/SortBy";
 import Filter from "../../ui/Filter";
 import TableOperations from "../../ui/TableOperations";
 // import AddNewBooking from "./AddNewBooking";
 import Button from "../../ui/Button";
 import { useNavigate } from "react-router-dom";
+import Heading from "../../ui/Heading";
+import Search from "../../ui/Search";
 
 function BookingTableOperations() {
   const navigate = useNavigate();
   return (
     <TableOperations>
-      {/* <AddNewBooking /> */}
-      <Button onClick={() => navigate("/addBooking")}>Add Booking</Button>
+      <Button size="small" onClick={() => navigate("/addBooking")}>
+        Add Booking
+      </Button>
+      <Heading as="h4" style={{ fontWeight: "normal" }}>
+        Search By(Guest Name)
+      </Heading>
+      <Search />
       <Filter
         filterField="status"
         options={[
@@ -18,18 +24,6 @@ function BookingTableOperations() {
           { value: "checked-out", label: "Checked out" },
           { value: "checked-in", label: "Checked in" },
           { value: "unconfirmed", label: "Unconfirmed" },
-        ]}
-      />
-
-      <SortBy
-        options={[
-          { value: "startDate-desc", label: "Sort by date (recent first)" },
-          { value: "startDate-asc", label: "Sort by date (earlier first)" },
-          {
-            value: "totalPrice-desc",
-            label: "Sort by amount (high first)",
-          },
-          { value: "totalPrice-asc", label: "Sort by amount (low first)" },
         ]}
       />
     </TableOperations>

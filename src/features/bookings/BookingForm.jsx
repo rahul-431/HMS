@@ -56,7 +56,7 @@ function BookingForm({ closeModal }) {
   const moveBack = () => {
     navigate("/bookings");
   };
-  const { cabins } = useCabin();
+  const { cabins } = useCabin(true);
   const { searchedGuest } = useSearchGuest();
 
   //for searching guest by name and options are displayed in the list

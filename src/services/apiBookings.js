@@ -1,54 +1,53 @@
-import { PAGE_SIZE } from "../utils/constants";
+// import { PAGE_SIZE } from "../utils/constants";
 import { getToday } from "../utils/helpers";
 import { baseUrl } from "./apiGuest";
 import supabase from "./supabase";
 
-export async function getBookings({ filter, sortBy, page }) {
-  let query = supabase
-    .from("bookings")
-    .select(
-      "id,created_at,startDate,endDate,numNights,numGuests,totalPrice,status,cabins(name),guests(fullName,emailAddress)",
-      { count: "exact" }
-    );
+export async function getBookings({ filter, page, search }) {
+  const response = await fetch(
+    `${baseUrl}/bookings?page=${page}&filter=${filter}&search=${search}`
+  )
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to fetch the booking");
+      }
+      return res.json();
+    })
+    .catch((err) => console.log(err));
 
-  //Filter
-  if (filter !== null)
-    query = query[filter.method || "eq"](filter.field, filter.value);
-
-  //Sort
-  if (sortBy)
-    query = query.order(sortBy.field, {
-      ascending: sortBy.direction === "asc",
-    });
-  //Pagination
-  if (page) {
-    const from = (page - 1) * PAGE_SIZE;
-    const to = from + PAGE_SIZE - 1;
-    query = query.range(from, to);
-  }
-
-  //QUERY
-  const { data, error, count } = await query;
-
-  if (error) {
-    console.error(error);
-    throw new Error("Bookings are not found");
-  }
-  // console.log(data, count);
-  return { data, count };
+  return response.data;
 }
 export async function getBooking(id) {
-  const { data, error } = await supabase
-    .from("bookings")
-    .select("*, cabins(*), guests(*)")
-    .eq("id", id)
-    .single();
+  const response = await fetch(`${baseUrl}/bookings/${id}`)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to fetch the booking");
+      }
+      return res.json();
+    })
+    .catch((err) => console.log(err));
 
-  if (error) {
-    console.error(error);
-    throw new Error("Booking not found");
-  }
-  return data;
+  return response.data;
+}
+export async function updateExtraCharge({ value, bookingId }) {
+  const response = await fetch(
+    `${baseUrl}/bookings/updateCharge/${bookingId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(value),
+    }
+  )
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to update extra price");
+      }
+      return res.json();
+    })
+    .catch((err) => console.log(err));
+  return response.data;
 }
 
 // Returns all BOOKINGS that are were created after the given date. Useful to get bookings created in the last 30 days, for example.

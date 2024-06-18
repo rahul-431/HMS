@@ -31,7 +31,11 @@ function BookingDetail() {
   const navigate = useNavigate();
   const moveBack = useMoveBack();
   if (_.isUndefined(booking)) return <Empty resource="Booking" />;
-  const { status, id: bookingId } = booking;
+  const {
+    status,
+    _id: bookingId,
+    guest: { _id: guestId },
+  } = booking;
   const statusToTagName = {
     unconfirmed: "blue",
     "checked-in": "green",
@@ -48,7 +52,7 @@ function BookingDetail() {
     <>
       <Row type="horizontal">
         <HeadingGroup>
-          <Heading as="h1">Booking #{bookingId}</Heading>
+          <Heading as="h1">Booking #</Heading>
           <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
         </HeadingGroup>
         <ButtonText onClick={moveBack}>&larr; Back</ButtonText>
@@ -57,6 +61,12 @@ function BookingDetail() {
       <BookingDataBox booking={booking} />
 
       <ButtonGroup>
+        <Button
+          variation="secondary"
+          onClick={() => navigate(`/guest/${guestId}`)}
+        >
+          Guest Info
+        </Button>
         {status === "unconfirmed" && (
           <Button
             icon={<HiOutlineArrowDownOnSquareStack />}
@@ -66,7 +76,6 @@ function BookingDetail() {
           </Button>
         )}
         {status === "checked-in" && <CheckoutButton bookingId={bookingId} />}
-
         <Button variation="secondary" onClick={moveBack}>
           Back
         </Button>

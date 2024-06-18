@@ -5,7 +5,7 @@ import { format, isToday } from "date-fns";
 import Tag from "../../ui/Tag";
 import Table from "../../ui/Table";
 
-import { formatCurrency } from "../../utils/helpers";
+import { formatCurrency, toCapitalize } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
 import Menus from "../../ui/Menus";
 import {
@@ -47,20 +47,17 @@ const Amount = styled.div`
   font-family: "Sono";
   font-weight: 500;
 `;
-function BookingRow({
-  booking: {
-    id: bookingId,
-    // created_at,
-    startDate,
-    endDate,
-    numNights,
-    // numGuests,
-    totalPrice,
+function BookingRow({ booking }) {
+  const {
+    _id: bookingId,
+    checkInDate,
+    checkoutDate,
     status,
-    guests,
-    cabins,
-  },
-}) {
+    roomCharge,
+    extraCharge,
+    guest,
+    room,
+  } = booking;
   const statusToTagName = {
     unconfirmed: "blue",
     "checked-in": "green",
@@ -74,29 +71,30 @@ function BookingRow({
   };
   return (
     <Table.Row>
-      <Cabin>{cabins.name}</Cabin>
+      <Cabin>{room.roomNumber}</Cabin>
 
       <Stacked>
-        <span>{guests.fullName}</span>
-        <span>{guests.emailAddress}</span>
+        <span>{toCapitalize(guest.fullName)}</span>
+        <span>{guest.phoneNumber}</span>
       </Stacked>
 
       <Stacked>
         <span>
-          {isToday(new Date(startDate))
+          {isToday(new Date(checkInDate))
             ? "Today"
-            : formatDistanceFromNow(startDate)}{" "}
-          &rarr; {numNights} night stay
+            : formatDistanceFromNow(checkInDate)}{" "}
+          &rarr; {1} night stay
+          {/* there will go numnights */}
         </span>
         <span>
-          {format(new Date(startDate), "MMM dd yyyy")} &mdash;
-          {format(new Date(endDate), "MMM dd yyyy")}
+          {format(new Date(checkInDate), "MMM dd yyyy")} &mdash;
+          {format(new Date(checkoutDate), "MMM dd yyyy")}
         </span>
       </Stacked>
 
       <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
 
-      <Amount>{formatCurrency(totalPrice)}</Amount>
+      <Amount>{formatCurrency(roomCharge + extraCharge)}</Amount>
       <Modal>
         <Menus.Menu>
           <Menus.Toggle id={bookingId} />

@@ -3,15 +3,24 @@ import styled from "styled-components";
 import { format, isToday } from "date-fns";
 import {
   HiOutlineChatBubbleBottomCenterText,
-  HiOutlineCheckCircle,
-  HiOutlineCurrencyDollar,
+  // HiOutlineCheckCircle,
+  // HiOutlineCurrencyDollar,
   HiOutlineHomeModern,
 } from "react-icons/hi2";
 
 import DataItem from "../../ui/DataItem";
-import { Flag } from "../../ui/Flag";
+// import { Flag } from "../../ui/Flag";
 
-import { formatDistanceFromNow, formatCurrency } from "../../utils/helpers";
+import {
+  formatDistanceFromNow,
+  formatCurrency,
+  toCapitalize,
+} from "../../utils/helpers";
+import FormRow from "../../ui/FormRow";
+import Input from "../../ui/Input";
+import Button from "../../ui/Button";
+import { useState } from "react";
+import useOtherCharge from "./useOtherCharge";
 
 const StyledBookingDataBox = styled.section`
   /* Box */
@@ -58,19 +67,17 @@ export const Section = styled.section`
 
 const Guest = styled.div`
   display: flex;
-  align-items: center;
-  gap: 1.2rem;
+  flex-direction: column;
+  align-items: left;
+  justify-content: center;
+  gap: 0.2rem;
   margin-bottom: 1.6rem;
-  color: var(--color-grey-500);
-
-  & p:first-of-type {
-    font-weight: 500;
-    color: var(--color-grey-700);
-  }
+  color: var(--color-grey-700);
 `;
 
 const Price = styled.div`
   display: flex;
+  /* flex-direction: column; */
   align-items: center;
   justify-content: space-between;
   padding: 1.6rem 3.2rem;
@@ -86,6 +93,7 @@ const Price = styled.div`
     text-transform: uppercase;
     font-size: 1.4rem;
     font-weight: 600;
+    /* color: green; */
   }
 
   svg {
@@ -108,50 +116,77 @@ export const Footer = styled.footer`
 // A purely presentational component
 function BookingDataBox({ booking }) {
   const {
-    created_at,
-    startDate,
-    endDate,
-    numNights,
-    numGuests,
-    cabinPrice,
-    extrasPrice,
-    totalPrice,
-    hasBreakfast,
+    _id: bookingId,
+    createdAt,
+    updatedAt,
+    checkInDate,
+    checkoutDate,
+    totalGuest,
+    roomCharge,
+    extraCharge,
+    otherCharge: newOtherCharge,
     observations,
     isPaid,
-    guests: { fullName: guestName, email, country, countryFlag, nationalID },
-    cabins: { name: cabinName },
+    otherPaid,
+    guest: {
+      fullName: guestName,
+      email,
+      nationality,
+      identityTypeNumber,
+      identityType,
+      phoneNumber,
+    },
+    room: { roomNumber },
   } = booking;
-
+  const [otherCharge, setOtherCharge] = useState(0);
+  const { addExtraCharge, isAdding } = useOtherCharge();
+  const handleAddCharge = () => {
+    if (otherCharge > 0) {
+      // console.log(bookingId);
+      // setOtherCharge(otherCharge + extraCharge);
+      const value = {
+        otherCharge: otherCharge,
+      };
+      addExtraCharge(
+        { value, bookingId },
+        {
+          onSuccess: () => {
+            setOtherCharge(0);
+          },
+        }
+      );
+    }
+  };
   return (
     <StyledBookingDataBox>
       <Header>
         <div>
           <HiOutlineHomeModern />
           <p>
-            {numNights} nights in Cabin <span>{cabinName}</span>
+            {1} nights in Room <span>{roomNumber}</span>
           </p>
         </div>
 
         <p>
-          {format(new Date(startDate), "EEE, MMM dd yyyy")} (
-          {isToday(new Date(startDate))
+          {format(new Date(checkInDate), " EEE, MMM dd yyyy")} (
+          {isToday(new Date(checkInDate))
             ? "Today"
-            : formatDistanceFromNow(startDate)}
-          ) &mdash; {format(new Date(endDate), "EEE, MMM dd yyyy")}
+            : formatDistanceFromNow(checkInDate)}
+          ) &mdash; {format(new Date(checkoutDate), "EEE, MMM dd yyyy")}
         </p>
       </Header>
 
       <Section>
         <Guest>
-          {countryFlag && <Flag src={countryFlag} alt={`Flag of ${country}`} />}
+          <p>Nationality : {toCapitalize(nationality)}</p>
+          <p>Guest Name : {toCapitalize(guestName)}</p>
+          <p>{totalGuest > 1 ? `+ ${totalGuest - 1} guests` : ""}</p>
+          <p>Contact : {phoneNumber}</p>
+          <p>Email : {email ? email : "....."}</p>
           <p>
-            {guestName} {numGuests > 1 ? `+ ${numGuests - 1} guests` : ""}
+            {toCapitalize(identityType)} :{" "}
+            {identityTypeNumber ? identityTypeNumber : "....."}
           </p>
-          <span>&bull;</span>
-          <p>{email}</p>
-          <span>&bull;</span>
-          <p>National ID {nationalID}</p>
         </Guest>
 
         {observations && (
@@ -159,30 +194,54 @@ function BookingDataBox({ booking }) {
             icon={<HiOutlineChatBubbleBottomCenterText />}
             label="Observations"
           >
-            {observations}
+            Other Details : {observations}
           </DataItem>
         )}
-
-        <DataItem icon={<HiOutlineCheckCircle />} label="Breakfast included?">
-          {hasBreakfast ? "Yes" : "No"}
-        </DataItem>
-
+        <FormRow label="Add Extra Charge" id="extraCharge">
+          <Input
+            type="number"
+            id="extraCharge"
+            value={otherCharge}
+            onChange={(e) => setOtherCharge(e.target.value)}
+          />
+          <Button onClick={handleAddCharge} disabled={isAdding}>
+            Add
+          </Button>
+        </FormRow>
         <Price isPaid={isPaid}>
-          <DataItem icon={<HiOutlineCurrencyDollar />} label={`Total price`}>
-            {formatCurrency(totalPrice)}
+          <DataItem label={`Total Amount`}>
+            {formatCurrency(extraCharge + roomCharge + newOtherCharge)}
 
-            {hasBreakfast &&
-              ` (${formatCurrency(cabinPrice)} cabin + ${formatCurrency(
-                extrasPrice
-              )} breakfast)`}
+            {(extraCharge || newOtherCharge) &&
+              ` (${formatCurrency(roomCharge)} room + ${formatCurrency(
+                extraCharge + newOtherCharge
+              )} other)`}
           </DataItem>
 
-          <p>{isPaid ? "Paid" : "Will pay at property"}</p>
+          <p>{isPaid && otherPaid ? "Paid" : "Due"}</p>
         </Price>
+        {!otherPaid && (
+          <Price isPaid={isPaid && otherPaid}>
+            <DataItem label={`Paid/Due status`}>
+              {!isPaid &&
+                !otherPaid &&
+                `Due Amount : ${formatCurrency(
+                  roomCharge + extraCharge + newOtherCharge
+                )}`}
+
+              {isPaid &&
+                !otherPaid &&
+                `Paid : ${formatCurrency(roomCharge + extraCharge)} and Due :
+            ${formatCurrency(newOtherCharge)}`}
+            </DataItem>
+            <p>{isPaid && otherPaid ? "Paid" : "Due"}</p>
+          </Price>
+        )}
       </Section>
 
       <Footer>
-        <p>Booked {format(new Date(created_at), "EEE, MMM dd yyyy, p")}</p>
+        <p>Booked {format(new Date(createdAt), "EEE, MMM dd yyyy, p")}</p>
+        <p>Updated {format(new Date(updatedAt), "EEE, MMM dd yyyy, p")}</p>
       </Footer>
     </StyledBookingDataBox>
   );

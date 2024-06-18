@@ -6,6 +6,7 @@ export default function useSearchGuest() {
   const [searchParam] = useSearchParams();
   const searchValue = searchParam.get("search");
   const search = !searchValue || searchValue === "" ? "" : searchValue;
+
   const {
     data: searchedGuest,
     isLoading,
