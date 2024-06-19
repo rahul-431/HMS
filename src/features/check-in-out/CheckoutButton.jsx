@@ -4,11 +4,12 @@ import Button from "../../ui/Button";
 import useBooking from "../bookings/useBooking";
 import { useCheckout } from "./useCheckout";
 
-function CheckoutButton({ bookingId, variation = "primary" }) {
+function CheckoutButton({ bookingId, variation = "primary", roomId }) {
   const { checkout, isCheckingOut } = useCheckout();
   const { booking } = useBooking();
   const { isPaid, otherPaid } = booking;
   const disabled = Boolean(isPaid && otherPaid);
+  console.log("inside Checkout button: roomid:", roomId);
   if (!disabled) {
     return (
       <Button
@@ -24,7 +25,7 @@ function CheckoutButton({ bookingId, variation = "primary" }) {
     <Button
       variation={variation}
       size="small"
-      onClick={() => checkout(bookingId)}
+      onClick={() => checkout({ bookingId, roomId })}
       disabled={isCheckingOut}
     >
       Check out

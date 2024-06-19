@@ -9,7 +9,7 @@ export default function useDeleteCabin() {
     onSuccess: () => {
       toast.success("Room Deleted successfully");
       queryClient.invalidateQueries({
-        queryKey: ["cabin"],
+        active: true,
       });
     },
     onError: (err) => {

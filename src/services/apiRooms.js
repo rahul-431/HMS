@@ -10,17 +10,19 @@ export async function getRooms(isBooking = false) {
   return response.data;
 }
 export async function deleteRoom(id) {
-  console.log("deleting this id of room", id);
-  const { data, error } = await supabase.from("cabins").delete().eq("id", id);
-
-  if (error) {
-    console.log(error);
-    throw new Error("Failed to delete the room");
-  }
-  return data;
+  const response = await fetch(`${baseUrl}/rooms/${id}`, {
+    method: "DELETE",
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to delete room");
+      }
+      return res.json();
+    })
+    .catch((error) => console.log(error));
+  return response;
 }
 export async function createRoom(newCabin) {
-  console.log(newCabin);
   const response = await fetch(`${baseUrl}/rooms`, {
     method: "POST",
     body: newCabin,

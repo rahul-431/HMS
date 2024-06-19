@@ -121,6 +121,7 @@ export async function getStaysTodayActivity() {
 }
 
 export async function updateBooking(id, obj) {
+  console.log(id, obj);
   const response = await fetch(`${baseUrl}/bookings/${id}`, {
     method: "PUT",
     headers: {

@@ -38,8 +38,7 @@ function BookingDetail() {
     status,
     _id: bookingId,
     guest: { _id: guestId },
-    isPaid,
-    otherPaid,
+    room: { _id: roomId },
   } = booking;
   const statusToTagName = {
     unconfirmed: "blue",
@@ -51,10 +50,7 @@ function BookingDetail() {
       onSettled: navigate(-1),
     });
   };
-  const paymentStatus = {
-    isPaid,
-    otherPaid,
-  };
+
   if (isLoading) return <Spinner />;
   return (
     <>
@@ -84,7 +80,7 @@ function BookingDetail() {
           </Button>
         )}
         {status === "checked-in" && (
-          <CheckoutButton bookingId={bookingId} paymentStatus={paymentStatus} />
+          <CheckoutButton bookingId={bookingId} roomId={roomId} />
         )}
         <Button variation="secondary" onClick={moveBack}>
           Back

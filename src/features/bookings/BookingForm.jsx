@@ -9,7 +9,7 @@ import Textarea from "../../ui/Textarea";
 import useCabin from "../cabins/useCabin";
 import Heading from "../../ui/Heading";
 import Row from "../../ui/Row";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import useSearchGuest from "./useSearchGuest";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -49,7 +49,7 @@ function BookingForm({ closeModal }) {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
+
     setValue,
   } = useForm();
   const { createBooking, isCreating } = useCreateBooking();
@@ -67,16 +67,6 @@ function BookingForm({ closeModal }) {
 
   //calculate the position of input field and then display list according to that position
   const [position, setPosition] = useState({});
-
-  // Watch maleNumber and femaleNumber to calculate total guest number
-  const maleNumber = watch("maleNumber", 0);
-  const femaleNumber = watch("femaleNumber", 0);
-
-  useEffect(() => {
-    // Calculate total and set it
-    const total = parseInt(maleNumber || 0) + parseInt(femaleNumber || 0);
-    setValue("total", total);
-  }, [maleNumber, femaleNumber, setValue]);
 
   const onInputChange = (e) => {
     setQuery(e.target.value);
@@ -166,7 +156,7 @@ function BookingForm({ closeModal }) {
           </StyledSelect>
         </FormRow>
         <FormRow
-          label="Select Guest"
+          label="Search Guest Name"
           error={errors?.guestId?.message}
           id="guestId"
           required="1"
@@ -223,24 +213,7 @@ function BookingForm({ closeModal }) {
             })}
           />
         </FormRow>
-        <FormRow
-          label="Total Guest"
-          id="totalGuest"
-          error={errors?.totalGuest?.message}
-        >
-          <Input
-            type="number"
-            id="totalGuest"
-            defaultValue={0}
-            disabled
-            {...register("totalGuest", {
-              min: {
-                value: 1,
-                message: "Value should be at least 1",
-              },
-            })}
-          />
-        </FormRow>
+
         <FormRow label="Relation" id="relation">
           <Input type="text" id="relation" {...register("relation")} />
         </FormRow>
