@@ -20,10 +20,12 @@ import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
 import Button from "../../ui/Button";
 import { useState } from "react";
-import useOtherCharge from "./useOtherCharge";
 import { Box } from "../check-in-out/CheckinBooking";
-import Checkbox from "../../ui/Checkbox";
-import useConfirmPaid from "./useConfirmPaid";
+// import Checkbox from "../../ui/Checkbox";
+// import useConfirmPaid from "./useConfirmPaid";
+import useUpdateBooking from "./useUpdateBooking";
+import ConfirmAction from "../../ui/ConfirmAction";
+import Modal from "../../ui/Modal";
 
 const StyledBookingDataBox = styled.section`
   /* Box */
@@ -126,10 +128,12 @@ function BookingDataBox({ booking }) {
     checkoutDate,
     totalGuest,
     status,
+    numNights,
     roomCharge,
+    dueAmount,
     extraCharge,
     otherCharge: newOtherCharge,
-    observations,
+    observation,
     isPaid,
     otherPaid,
     user: { fullName: addedBy },
@@ -144,27 +148,63 @@ function BookingDataBox({ booking }) {
     room: { roomNumber },
   } = booking;
   const [otherCharge, setOtherCharge] = useState(0);
-  const [confirmPaid, setConfirmPaid] = useState(isPaid && otherPaid);
-  const { addExtraCharge, isAdding } = useOtherCharge();
-  const { confirmingPaid, isConfirmingPaid } = useConfirmPaid();
+  const [payment, setPayment] = useState(0);
+  // const [confirmPaid, setConfirmPaid] = useState(isPaid && otherPaid);
+  const { updateBookingInfo, isUpdating } = useUpdateBooking();
+  // const { confirmingPaid, isConfirmingPaid } = useConfirmPaid();
 
   const handleConfirm = () => {
-    confirmingPaid(bookingId, {
-      onSuccess: () => {
-        setConfirmPaid(!confirmPaid);
-      },
-    });
+    // confirmingPaid(bookingId, {
+    //   onSuccess: () => {
+    //     setConfirmPaid(!confirmPaid);
+    //   },
+    // });
+    const newExtraCharge = Number(newOtherCharge) + Number(extraCharge);
+    const value = {
+      extraCharge: newExtraCharge,
+      otherCharge: 0,
+      dueAmount: 0,
+      otherPaid: true,
+      isPaid: true,
+    };
+    updateBookingInfo(
+      { value, bookingId },
+      {
+        onSuccess: () => {
+          setOtherCharge(0);
+        },
+      }
+    );
   };
   const handleAddCharge = () => {
     if (otherCharge > 0) {
+      const charge = Number(otherCharge) + Number(newOtherCharge);
       const value = {
-        otherCharge: otherCharge,
+        otherCharge: charge,
+        otherPaid: false,
       };
-      addExtraCharge(
+
+      updateBookingInfo(
         { value, bookingId },
         {
           onSuccess: () => {
             setOtherCharge(0);
+          },
+        }
+      );
+    }
+  };
+  const handleAddPayment = () => {
+    if (payment > 0) {
+      const charge = Number(dueAmount) - Number(payment);
+      const value = {
+        dueAmount: charge,
+      };
+      updateBookingInfo(
+        { value, bookingId },
+        {
+          onSuccess: () => {
+            setPayment(0);
           },
         }
       );
@@ -176,12 +216,13 @@ function BookingDataBox({ booking }) {
         <div>
           <HiOutlineHomeModern />
           <p>
-            {1} nights in Room <span>{roomNumber}</span>
+            {numNights ? numNights : "..."} nights in Room{" "}
+            <span>{roomNumber}</span>
           </p>
         </div>
 
         <p>
-          {format(new Date(checkInDate), " EEE, MMM dd yyyy")} (
+          {format(new Date(checkInDate), " EEE, MMM dd yyyy,p")} (
           {isToday(new Date(checkInDate))
             ? "Today"
             : formatDistanceFromNow(checkInDate)}
@@ -201,14 +242,15 @@ function BookingDataBox({ booking }) {
             {identityTypeNumber ? identityTypeNumber : "....."}
           </p>
           <p>Added By : {addedBy ? addedBy : "....."}</p>
+          <p>Room Charge : {roomCharge / numNights} per day</p>
         </Guest>
 
-        {observations && (
+        {observation && (
           <DataItem
             icon={<HiOutlineChatBubbleBottomCenterText />}
             label="Observations"
           >
-            Other Details : {observations}
+            {observation}
           </DataItem>
         )}
         {status !== "checked-out" && (
@@ -219,16 +261,30 @@ function BookingDataBox({ booking }) {
               value={otherCharge}
               onChange={(e) => setOtherCharge(e.target.value)}
             />
-            <Button onClick={handleAddCharge} disabled={isAdding}>
+            <Button onClick={handleAddCharge} disabled={isUpdating}>
+              Add
+            </Button>
+          </FormRow>
+        )}
+        {dueAmount > 0 && (
+          <FormRow label="Add payment" id="payment">
+            <Input
+              type="number"
+              id="payment"
+              value={payment}
+              disabled={isUpdating}
+              onChange={(e) => setPayment(e.target.value)}
+            />
+            <Button onClick={handleAddPayment} disabled={isUpdating}>
               Add
             </Button>
           </FormRow>
         )}
         <Price isPaid={isPaid}>
           <DataItem label={`Total Amount`}>
-            {formatCurrency(extraCharge + roomCharge + newOtherCharge)}
+            {formatCurrency(Number(extraCharge + roomCharge + newOtherCharge))}
 
-            {(extraCharge || newOtherCharge) &&
+            {(extraCharge > 0 || newOtherCharge) &&
               ` (${formatCurrency(roomCharge)} room + ${formatCurrency(
                 extraCharge + newOtherCharge
               )} other)`}
@@ -236,18 +292,25 @@ function BookingDataBox({ booking }) {
 
           <p>{isPaid && otherPaid ? "Paid" : "Due"}</p>
         </Price>
-        {!otherPaid && (
+        {(!otherPaid || !isPaid) && (
           <Price isPaid={isPaid && otherPaid}>
             <DataItem label={`Paid/Due status`}>
               {!isPaid &&
+                `Due Amount : ${formatCurrency(
+                  dueAmount + extraCharge + newOtherCharge
+                )} and Paid:  ${formatCurrency(
+                  extraCharge + roomCharge - dueAmount
+                )}`}
+              {!isPaid &&
                 !otherPaid &&
                 `Due Amount : ${formatCurrency(
-                  roomCharge + extraCharge + newOtherCharge
+                  dueAmount + extraCharge + newOtherCharge
                 )}`}
 
-              {isPaid &&
-                !otherPaid &&
-                `Paid : ${formatCurrency(roomCharge + extraCharge)} and Due :
+              {!otherPaid &&
+                `Paid : ${formatCurrency(
+                  extraCharge + roomCharge - dueAmount
+                )} and Due :
             ${formatCurrency(newOtherCharge)}`}
             </DataItem>
             <p>{isPaid && otherPaid ? "Paid" : "Due"}</p>
@@ -256,15 +319,27 @@ function BookingDataBox({ booking }) {
       </Section>
 
       <Box>
-        <Checkbox
-          disabled={isConfirmingPaid || (isPaid && otherPaid)}
-          checked={isPaid && otherPaid}
-          onChange={handleConfirm}
-          id="confirm"
-        >
-          I confirm that {guestName} has paid the total amount{" "}
-          {formatCurrency(extraCharge + roomCharge + newOtherCharge)}
-        </Checkbox>
+        <Modal>
+          <Modal.Open opens="confirmBookingDelete">
+            <Button
+              variation={isPaid && otherPaid ? "secondary" : "primary"}
+              size="small"
+              disabled={isUpdating || (isPaid && otherPaid)}
+            >
+              Confirm
+            </Button>
+          </Modal.Open>
+          <Modal.Window name="confirmBookingDelete">
+            <ConfirmAction
+              action="update"
+              resourceName="payment"
+              disabled={isUpdating}
+              onConfirm={handleConfirm}
+            />
+          </Modal.Window>
+        </Modal>
+        I confirm that {guestName} has paid the total amount{" "}
+        {formatCurrency(extraCharge + roomCharge + newOtherCharge)}
       </Box>
 
       <Footer>

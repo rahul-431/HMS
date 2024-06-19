@@ -56,10 +56,12 @@ function BookingRow({ booking }) {
     status,
     roomCharge,
     extraCharge,
+    numNights,
     guest,
     room,
     isPaid,
     otherPaid,
+    room: { _id: roomId },
   } = booking;
   const statusToTagName = {
     unconfirmed: "blue",
@@ -69,12 +71,13 @@ function BookingRow({ booking }) {
   const navigate = useNavigate();
   const { checkout, isCheckingOut } = useCheckout();
   const { deleteBookingFn, isDeleting } = useDeleteBooking();
+
   const disabled = Boolean(isPaid && otherPaid);
   const handleCheckout = () => {
     if (!disabled) {
       toast.error("Guest have due amount to pay");
     } else {
-      checkout(bookingId);
+      checkout({ bookingId, roomId });
     }
   };
   return (
@@ -91,12 +94,12 @@ function BookingRow({ booking }) {
           {isToday(new Date(checkInDate))
             ? "Today"
             : formatDistanceFromNow(checkInDate)}{" "}
-          &rarr; {1} night stay
+          &rarr; {numNights ? numNights : "..."} night stay
           {/* there will go numnights */}
         </span>
         <span>
-          {format(new Date(checkInDate), "MMM dd yyyy")} &mdash;
-          {format(new Date(checkoutDate), "MMM dd yyyy")}
+          {format(new Date(checkInDate), "MMM dd yyyy,p")} &mdash;
+          {format(new Date(checkoutDate), "MMM dd yyyy,p")}
         </span>
       </Stacked>
 
@@ -130,6 +133,13 @@ function BookingRow({ booking }) {
                 Check Out
               </Menus.Button>
             )}
+            <Menus.Button
+              icon={<HiOutlineArrowUpOnSquareStack />}
+              onClick={() => navigate(`/editBooking/${bookingId}`)}
+              disabled={isCheckingOut}
+            >
+              Edit
+            </Menus.Button>
             <Modal.Open opens="confirmBookingDelete">
               <Menus.Button icon={<HiOutlineTrash />}>Delete</Menus.Button>
             </Modal.Open>

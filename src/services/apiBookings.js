@@ -29,36 +29,17 @@ export async function getBooking(id) {
 
   return response.data;
 }
-export async function updateExtraCharge({ value, bookingId }) {
-  const response = await fetch(
-    `${baseUrl}/bookings/updateCharge/${bookingId}`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(value),
-    }
-  )
+export async function updateBookingApi({ value, bookingId }) {
+  const response = await fetch(`${baseUrl}/bookings/${bookingId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(value),
+  })
     .then((res) => {
       if (!res.ok) {
         throw new Error("Failed to update extra price");
-      }
-      return res.json();
-    })
-    .catch((err) => console.log(err));
-  return response.data;
-}
-export async function confirmAllPayment(bookingId) {
-  const response = await fetch(
-    `${baseUrl}/bookings/confirmPayment/${bookingId}`,
-    {
-      method: "PUT",
-    }
-  )
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error("Failed to confirm payment");
       }
       return res.json();
     })
@@ -120,9 +101,10 @@ export async function getStaysTodayActivity() {
   return data;
 }
 
-export async function updateBooking(id, obj) {
+export async function checkoutApi(id, obj) {
+  // console.log(id, obj);
   console.log(id, obj);
-  const response = await fetch(`${baseUrl}/bookings/${id}`, {
+  const response = await fetch(`${baseUrl}/bookings/checkout/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

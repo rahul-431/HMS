@@ -49,7 +49,10 @@ function ConfirmAction({
         <Button
           variation="danger"
           disabled={disabled}
-          onClick={onConfirm}
+          onClick={() => {
+            onConfirm();
+            closeModal();
+          }}
           type="submit"
         >
           {action === "delete" ? `Delete` : `update`}

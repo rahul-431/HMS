@@ -9,12 +9,13 @@ import Textarea from "../../ui/Textarea";
 import useCabin from "../cabins/useCabin";
 import Heading from "../../ui/Heading";
 import Row from "../../ui/Row";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import useSearchGuest from "./useSearchGuest";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ButtonText from "../../ui/ButtonText";
 import useCreateBooking from "./useCreateBooking";
+import { addDays, format, setHours, setMinutes } from "date-fns";
 const Ul = styled.ul`
   position: fixed;
   background-color: var(--color-grey-0);
@@ -44,15 +45,18 @@ const Ul = styled.ul`
 `;
 function BookingForm({ closeModal }) {
   const navigate = useNavigate();
+
+  const { createBooking, isCreating } = useCreateBooking();
+
   const [searchParam, setSearchParam] = useSearchParams();
   const {
     register,
     handleSubmit,
     formState: { errors },
-
+    watch,
     setValue,
   } = useForm();
-  const { createBooking, isCreating } = useCreateBooking();
+
   const moveBack = () => {
     navigate("/bookings");
   };
@@ -99,6 +103,22 @@ function BookingForm({ closeModal }) {
   const onError = (errors) => {
     console.log(errors);
   };
+  const checkInDate = watch("checkInDate");
+  const numNights = watch("numNights", 1);
+
+  useEffect(() => {
+    if (checkInDate && numNights) {
+      // const checkoutDate = addDays(new Date(checkInDate), parseInt(numNights));
+      // setValue("checkoutDate", format(checkoutDate, "yyyy-MM-dd'T'HH:mm"));
+      const checkInDateObj = new Date(checkInDate);
+      const checkoutDate = addDays(checkInDateObj, parseInt(numNights));
+      const checkoutDateWithTime = setMinutes(setHours(checkoutDate, 12), 5); // Setting time to 12:05 PM
+      setValue(
+        "checkoutDate",
+        format(checkoutDateWithTime, "yyyy-MM-dd'T'HH:mm")
+      );
+    }
+  }, [checkInDate, numNights, setValue]);
 
   return (
     <>
@@ -125,6 +145,23 @@ function BookingForm({ closeModal }) {
           />
         </FormRow>
         <FormRow
+          label="Stay Nights"
+          id="numNights"
+          error={errors?.numNights?.message}
+        >
+          <Input
+            type="number"
+            id="numNights"
+            defaultValue={1}
+            {...register("numNights", {
+              min: {
+                value: 1,
+                message: "Value should be at least 1",
+              },
+            })}
+          />
+        </FormRow>
+        <FormRow
           label="Checkout Date"
           error={errors?.checkoutDate?.message}
           id="checkoutDate"
@@ -132,6 +169,7 @@ function BookingForm({ closeModal }) {
         >
           <Input
             type="datetime-local"
+            disabled
             id="checkoutDate"
             {...register("checkoutDate", {
               required: "This Field is required",
@@ -181,6 +219,7 @@ function BookingForm({ closeModal }) {
             </Ul>
           )}
         </FormRow>
+
         <FormRow
           label="Male"
           id="maleNumber"
@@ -245,7 +284,14 @@ function BookingForm({ closeModal }) {
         <FormRow label="Extra Charge" id="extraCharge">
           <Input type="number" id="extraCharge" {...register("extraCharge")} />
         </FormRow>
-        <FormRow
+        <FormRow label="Payment received" id="advanceAmount">
+          <Input
+            type="number"
+            id="advanceAmount"
+            {...register("advanceAmount")}
+          />
+        </FormRow>
+        {/* <FormRow
           label="Paid Status"
           error={errors?.isPaid?.message}
           id="isPaid"
@@ -257,7 +303,8 @@ function BookingForm({ closeModal }) {
             </option>
             <option value={false}>Due</option>
           </StyledSelect>
-        </FormRow>
+        </FormRow> */}
+
         <FormRow label="Other Info" id="observation">
           <Textarea id="observation" {...register("observation")} />
         </FormRow>
