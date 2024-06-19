@@ -125,12 +125,14 @@ function BookingDataBox({ booking }) {
     checkInDate,
     checkoutDate,
     totalGuest,
+    status,
     roomCharge,
     extraCharge,
     otherCharge: newOtherCharge,
     observations,
     isPaid,
     otherPaid,
+    user: { fullName: addedBy },
     guest: {
       fullName: guestName,
       email,
@@ -198,6 +200,7 @@ function BookingDataBox({ booking }) {
             {toCapitalize(identityType)} :{" "}
             {identityTypeNumber ? identityTypeNumber : "....."}
           </p>
+          <p>Added By : {addedBy ? addedBy : "....."}</p>
         </Guest>
 
         {observations && (
@@ -208,17 +211,19 @@ function BookingDataBox({ booking }) {
             Other Details : {observations}
           </DataItem>
         )}
-        <FormRow label="Add Extra Charge" id="extraCharge">
-          <Input
-            type="number"
-            id="extraCharge"
-            value={otherCharge}
-            onChange={(e) => setOtherCharge(e.target.value)}
-          />
-          <Button onClick={handleAddCharge} disabled={isAdding}>
-            Add
-          </Button>
-        </FormRow>
+        {status !== "checked-out" && (
+          <FormRow label="Add Extra Charge" id="extraCharge">
+            <Input
+              type="number"
+              id="extraCharge"
+              value={otherCharge}
+              onChange={(e) => setOtherCharge(e.target.value)}
+            />
+            <Button onClick={handleAddCharge} disabled={isAdding}>
+              Add
+            </Button>
+          </FormRow>
+        )}
         <Price isPaid={isPaid}>
           <DataItem label={`Total Amount`}>
             {formatCurrency(extraCharge + roomCharge + newOtherCharge)}

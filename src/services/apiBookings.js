@@ -121,18 +121,21 @@ export async function getStaysTodayActivity() {
 }
 
 export async function updateBooking(id, obj) {
-  const { data, error } = await supabase
-    .from("bookings")
-    .update(obj)
-    .eq("id", id)
-    .select()
-    .single();
-
-  if (error) {
-    console.error(error);
-    throw new Error("Booking could not be updated");
-  }
-  return data;
+  const response = await fetch(`${baseUrl}/bookings/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(obj),
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to confirm payment");
+      }
+      return res.json();
+    })
+    .catch((err) => console.log(err));
+  return response.data;
 }
 
 export async function deleteBooking(id) {

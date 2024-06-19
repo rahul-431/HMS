@@ -18,6 +18,7 @@ import Modal from "../../ui/Modal";
 import ConfirmAction from "../../ui/ConfirmAction";
 import useDeleteBooking from "./useDeleteBooking";
 import Empty from "../../ui/Empty";
+// import { useEffect } from "react";
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -30,11 +31,15 @@ function BookingDetail() {
   const { deleteBookingFn, isDeleting } = useDeleteBooking();
   const navigate = useNavigate();
   const moveBack = useMoveBack();
+  // let disabled = false;
+
   if (_.isUndefined(booking)) return <Empty resource="Booking" />;
   const {
     status,
     _id: bookingId,
     guest: { _id: guestId },
+    isPaid,
+    otherPaid,
   } = booking;
   const statusToTagName = {
     unconfirmed: "blue",
@@ -46,7 +51,10 @@ function BookingDetail() {
       onSettled: navigate(-1),
     });
   };
-
+  const paymentStatus = {
+    isPaid,
+    otherPaid,
+  };
   if (isLoading) return <Spinner />;
   return (
     <>
@@ -75,7 +83,9 @@ function BookingDetail() {
             Check In
           </Button>
         )}
-        {status === "checked-in" && <CheckoutButton bookingId={bookingId} />}
+        {status === "checked-in" && (
+          <CheckoutButton bookingId={bookingId} paymentStatus={paymentStatus} />
+        )}
         <Button variation="secondary" onClick={moveBack}>
           Back
         </Button>

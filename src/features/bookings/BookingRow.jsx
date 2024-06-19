@@ -19,6 +19,7 @@ import { useCheckout } from "../check-in-out/useCheckout";
 import Modal from "../../ui/Modal";
 import ConfirmAction from "../../ui/ConfirmAction";
 import useDeleteBooking from "./useDeleteBooking";
+import toast from "react-hot-toast";
 const Cabin = styled.div`
   font-size: 1.6rem;
   font-weight: 600;
@@ -57,6 +58,8 @@ function BookingRow({ booking }) {
     extraCharge,
     guest,
     room,
+    isPaid,
+    otherPaid,
   } = booking;
   const statusToTagName = {
     unconfirmed: "blue",
@@ -66,8 +69,13 @@ function BookingRow({ booking }) {
   const navigate = useNavigate();
   const { checkout, isCheckingOut } = useCheckout();
   const { deleteBookingFn, isDeleting } = useDeleteBooking();
+  const disabled = Boolean(isPaid && otherPaid);
   const handleCheckout = () => {
-    checkout(bookingId);
+    if (!disabled) {
+      toast.error("Guest have due amount to pay");
+    } else {
+      checkout(bookingId);
+    }
   };
   return (
     <Table.Row>
