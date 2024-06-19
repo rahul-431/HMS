@@ -17,7 +17,7 @@ import { useCheckin } from "./useCheckin";
 import useSetting from "../settings/useSetting";
 import { formatCurrency } from "../../utils/helpers";
 
-export const Box = styled.div`
+const Box = styled.div`
   /* Box */
   background-color: var(--color-grey-0);
   border: 1px solid var(--color-grey-100);

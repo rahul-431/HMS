@@ -49,6 +49,22 @@ export async function updateExtraCharge({ value, bookingId }) {
     .catch((err) => console.log(err));
   return response.data;
 }
+export async function confirmAllPayment(bookingId) {
+  const response = await fetch(
+    `${baseUrl}/bookings/confirmPayment/${bookingId}`,
+    {
+      method: "PUT",
+    }
+  )
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to confirm payment");
+      }
+      return res.json();
+    })
+    .catch((err) => console.log(err));
+  return response.data;
+}
 
 // Returns all BOOKINGS that are were created after the given date. Useful to get bookings created in the last 30 days, for example.
 export async function getBookingsAfterDate(date) {
@@ -120,14 +136,17 @@ export async function updateBooking(id, obj) {
 }
 
 export async function deleteBooking(id) {
-  // REMEMBER RLS POLICIES
-  const { data, error } = await supabase.from("bookings").delete().eq("id", id);
-
-  if (error) {
-    console.error(error);
-    throw new Error("Booking could not be deleted");
-  }
-  return data;
+  const response = await fetch(`${baseUrl}/bookings/${id}`, {
+    method: "DELETE",
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to delete booking");
+      }
+      return res?.json();
+    })
+    .catch((err) => console.log(err));
+  return response;
 }
 export async function addBooking(newBooking) {
   const response = await fetch(`${baseUrl}/bookings`, {

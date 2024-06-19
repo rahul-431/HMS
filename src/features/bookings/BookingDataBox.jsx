@@ -21,6 +21,9 @@ import Input from "../../ui/Input";
 import Button from "../../ui/Button";
 import { useState } from "react";
 import useOtherCharge from "./useOtherCharge";
+import { Box } from "../check-in-out/CheckinBooking";
+import Checkbox from "../../ui/Checkbox";
+import useConfirmPaid from "./useConfirmPaid";
 
 const StyledBookingDataBox = styled.section`
   /* Box */
@@ -139,11 +142,19 @@ function BookingDataBox({ booking }) {
     room: { roomNumber },
   } = booking;
   const [otherCharge, setOtherCharge] = useState(0);
+  const [confirmPaid, setConfirmPaid] = useState(isPaid && otherPaid);
   const { addExtraCharge, isAdding } = useOtherCharge();
+  const { confirmingPaid, isConfirmingPaid } = useConfirmPaid();
+
+  const handleConfirm = () => {
+    confirmingPaid(bookingId, {
+      onSuccess: () => {
+        setConfirmPaid(!confirmPaid);
+      },
+    });
+  };
   const handleAddCharge = () => {
     if (otherCharge > 0) {
-      // console.log(bookingId);
-      // setOtherCharge(otherCharge + extraCharge);
       const value = {
         otherCharge: otherCharge,
       };
@@ -238,6 +249,18 @@ function BookingDataBox({ booking }) {
           </Price>
         )}
       </Section>
+
+      <Box>
+        <Checkbox
+          disabled={isConfirmingPaid || (isPaid && otherPaid)}
+          checked={isPaid && otherPaid}
+          onChange={handleConfirm}
+          id="confirm"
+        >
+          I confirm that {guestName} has paid the total amount{" "}
+          {formatCurrency(extraCharge + roomCharge + newOtherCharge)}
+        </Checkbox>
+      </Box>
 
       <Footer>
         <p>Booked {format(new Date(createdAt), "EEE, MMM dd yyyy, p")}</p>
