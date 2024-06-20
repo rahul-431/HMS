@@ -13,6 +13,7 @@ const Row = styled.div`
     css`
       flex-direction: column;
       gap: 1.2rem;
+      margin-bottom: 6rem;
     `}
 `;
 Row.defaultProps = {

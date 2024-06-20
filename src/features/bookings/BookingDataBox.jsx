@@ -179,8 +179,10 @@ function BookingDataBox({ booking }) {
   const handleAddCharge = () => {
     if (otherCharge > 0) {
       const charge = Number(otherCharge) + Number(newOtherCharge);
+      const nd = Number(otherCharge) + Number(dueAmount);
       const value = {
         otherCharge: charge,
+        dueAmount: nd,
         otherPaid: false,
       };
 
@@ -196,8 +198,15 @@ function BookingDataBox({ booking }) {
   };
   const handleAddPayment = () => {
     if (payment > 0) {
-      const charge = Number(dueAmount) - Number(payment);
+      const charge = dueAmount > 0 ? Number(dueAmount) - Number(payment) : 0;
+      const newCharge =
+        newOtherCharge > 0 ? Number(newOtherCharge) - Number(payment) : 0;
+      const newExtraCharge = !isPaid
+        ? Number(extraCharge) + Number(payment)
+        : Number(extraCharge) + Number(newOtherCharge);
       const value = {
+        otherCharge: newCharge,
+        extraCharge: newExtraCharge,
         dueAmount: charge,
       };
       updateBookingInfo(
@@ -266,7 +275,7 @@ function BookingDataBox({ booking }) {
             </Button>
           </FormRow>
         )}
-        {dueAmount > 0 && (
+        {(dueAmount > 0 || newOtherCharge > 0) && (
           <FormRow label="Add payment" id="payment">
             <Input
               type="number"
@@ -295,7 +304,25 @@ function BookingDataBox({ booking }) {
         {(!otherPaid || !isPaid) && (
           <Price isPaid={isPaid && otherPaid}>
             <DataItem label={`Paid/Due status`}>
-              {!isPaid &&
+              {!isPaid && !otherPaid
+                ? `aDue Amount : ${formatCurrency(
+                    dueAmount
+                  )} and Paid : ${formatCurrency(
+                    extraCharge + roomCharge + newOtherCharge - dueAmount
+                  )}`
+                : !isPaid && otherPaid
+                ? `bDue Amount : ${formatCurrency(
+                    dueAmount
+                  )} and Paid:  ${formatCurrency(
+                    extraCharge + roomCharge - dueAmount
+                  )}`
+                : isPaid && !otherPaid
+                ? `cPaid : ${formatCurrency(
+                    extraCharge + roomCharge - dueAmount
+                  )} and Due :
+            ${formatCurrency(newOtherCharge)}`
+                : "All Paid"}
+              {/* {!isPaid &&
                 `Due Amount : ${formatCurrency(
                   dueAmount + extraCharge + newOtherCharge
                 )} and Paid:  ${formatCurrency(
@@ -311,7 +338,7 @@ function BookingDataBox({ booking }) {
                 `Paid : ${formatCurrency(
                   extraCharge + roomCharge - dueAmount
                 )} and Due :
-            ${formatCurrency(newOtherCharge)}`}
+            ${formatCurrency(newOtherCharge)}`} */}
             </DataItem>
             <p>{isPaid && otherPaid ? "Paid" : "Due"}</p>
           </Price>

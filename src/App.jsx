@@ -53,7 +53,6 @@ const App = () => {
               <Route path="guest/:id" element={<GuestDetail />} />
               <Route path="bookings" element={<Bookings />} />
               <Route path="addBooking" element={<BookingForm />} />
-              <Route path="editBooking/:id" element={<BookingForm />} />
               <Route path="bookings/:id" element={<Booking />} />
               <Route path="checkin/:id" element={<Checkin />} />
               <Route path="cabins" element={<Cabins />} />

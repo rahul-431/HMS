@@ -26,5 +26,15 @@ const Heading = styled.h1`
       text-align: center;
       font-weight: 500;
     `}
+    ${(props) =>
+    props.type === "h-flex" &&
+    css`
+      font-size: 1.8rem;
+      font-weight: bold;
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      /* gap: 2rem; */
+    `}
 `;
 export default Heading;

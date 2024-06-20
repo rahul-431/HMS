@@ -133,13 +133,15 @@ function BookingRow({ booking }) {
                 Check Out
               </Menus.Button>
             )}
-            <Menus.Button
-              icon={<HiOutlineArrowUpOnSquareStack />}
-              onClick={() => navigate(`/editBooking/${bookingId}`)}
-              disabled={isCheckingOut}
-            >
-              Edit
-            </Menus.Button>
+            {status === "checked-in" && (
+              <Menus.Button
+                icon={<HiOutlineArrowUpOnSquareStack />}
+                onClick={() => console.log("extend by i day")}
+                disabled={isCheckingOut}
+              >
+                Extend Stay
+              </Menus.Button>
+            )}
             <Modal.Open opens="confirmBookingDelete">
               <Menus.Button icon={<HiOutlineTrash />}>Delete</Menus.Button>
             </Modal.Open>

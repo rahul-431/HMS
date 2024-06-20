@@ -80,6 +80,14 @@ function BookingDetail() {
           </Button>
         )}
         {status === "checked-in" && (
+          <Button
+            icon={<HiOutlineArrowDownOnSquareStack />}
+            onClick={() => console.log("extend")}
+          >
+            Extend Stay
+          </Button>
+        )}
+        {status === "checked-in" && (
           <CheckoutButton bookingId={bookingId} roomId={roomId} />
         )}
         <Button variation="secondary" onClick={moveBack}>
