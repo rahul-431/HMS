@@ -12,7 +12,13 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useDarkMode } from "../../context/DarkModeContext";
-import { eachDayOfInterval, format, isSameDay, subDays } from "date-fns";
+import {
+  differenceInDays,
+  eachDayOfInterval,
+  format,
+  isSameDay,
+  subDays,
+} from "date-fns";
 const StyledSalesChart = styled(DashboardBox)`
   grid-column: 1 / -1;
 
@@ -25,31 +31,41 @@ const StyledSalesChart = styled(DashboardBox)`
 
 export default function SalesChart({ bookings, numDays }) {
   const { isDarkMode } = useDarkMode();
-  const allDates = eachDayOfInterval({
-    start: subDays(new Date(), numDays - 1),
-    end: new Date(),
-  });
+  const { createdAt } = bookings[0];
+  const newCreateAt = subDays(new Date(createdAt), 7).toISOString();
+  const totalDays = differenceInDays(new Date(), newCreateAt);
+
+  const allDates =
+    !isNaN(numDays) && numDays !== "all"
+      ? eachDayOfInterval({
+          start: subDays(new Date(), numDays - 1),
+          end: new Date(),
+        })
+      : eachDayOfInterval({
+          start: subDays(new Date(), totalDays - 1),
+          end: new Date(),
+        });
   const data = allDates.map((date) => {
     return {
       label: format(date, "MMM dd"),
-      totalSales: bookings
-        .filter((booking) => isSameDay(date, new Date(booking.created_at)))
-        .reduce((acc, cur) => acc + cur.totalPrice, 0),
-      extrasSales: bookings
-        .filter((booking) => isSameDay(date, new Date(booking.created_at)))
-        .reduce((acc, cur) => acc + cur.extrasPrice, 0),
+      roomCharge: bookings
+        .filter((booking) => isSameDay(date, new Date(booking.createdAt)))
+        .reduce((acc, cur) => acc + cur.roomCharge, 0),
+      extraCharge: bookings
+        .filter((booking) => isSameDay(date, new Date(booking.createdAt)))
+        .reduce((acc, cur) => acc + cur.extraCharge, 0),
     };
   });
   const colors = isDarkMode
     ? {
-        totalSales: { stroke: "#4f46e5", fill: "#4f46e5" },
-        extrasSales: { stroke: "#22c55e", fill: "#22c55e" },
+        roomCharge: { stroke: "#4f46e5", fill: "#4f46e5" },
+        extraCharge: { stroke: "#22c55e", fill: "#22c55e" },
         text: "#e5e7eb",
         background: "#18212f",
       }
     : {
-        totalSales: { stroke: "#4f46e5", fill: "#c7d2fe" },
-        extrasSales: { stroke: "#16a34a", fill: "#dcfce7" },
+        roomCharge: { stroke: "#4f46e5", fill: "#c7d2fe" },
+        extraCharge: { stroke: "#16a34a", fill: "#dcfce7" },
         text: "#374151",
         background: "#fff",
       };
@@ -75,21 +91,21 @@ export default function SalesChart({ bookings, numDays }) {
           <CartesianGrid strokeDasharray="4" />
           <Tooltip contentStyle={{ backgroundColor: colors.background }} />
           <Area
-            dataKey="totalSales"
+            dataKey="roomCharge"
             type="monotone"
-            stroke={colors.totalSales.stroke}
-            fill={colors.totalSales.fill}
+            stroke={colors.roomCharge.stroke}
+            fill={colors.roomCharge.fill}
             strokeWidth={2}
-            name="Total Sales"
+            name="Room Sales"
             unit="RS"
           />
           <Area
-            dataKey="extrasSales"
+            dataKey="extraCharge"
             type="monotone"
-            stroke={colors.extrasSales.stroke}
-            fill={colors.extrasSales.fill}
+            stroke={colors.extraCharge.stroke}
+            fill={colors.extraCharge.fill}
             strokeWidth={2}
-            name="Extra Sales"
+            name="Other Sales"
             unit="RS"
           />
         </AreaChart>

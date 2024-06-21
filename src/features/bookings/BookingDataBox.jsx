@@ -122,6 +122,8 @@ function BookingDataBox({ booking }) {
     checkInDate,
     checkoutDate,
     totalGuest,
+    maleNumber,
+    femaleNumber,
     status,
     numNights,
     roomCharge,
@@ -231,7 +233,10 @@ function BookingDataBox({ booking }) {
         <Guest>
           <p>Nationality : {toCapitalize(nationality)}</p>
           <p>Guest Name : {toCapitalize(guestName)}</p>
-          <p>{totalGuest > 1 ? `+ ${totalGuest - 1} guests` : ""}</p>
+          <p>
+            Total Guest: {maleNumber ? maleNumber : 0} Male/
+            {femaleNumber ? femaleNumber : 0} Female Total: {totalGuest}
+          </p>
           <p>Contact : {phoneNumber}</p>
           <p>Email : {email ? email : "....."}</p>
           <p>
