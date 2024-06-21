@@ -1,4 +1,3 @@
-import supabase from "./supabase";
 const baseUrl = import.meta.env.VITE_BASE_URL;
 export async function getRooms(isBooking = false) {
   const response = await fetch(`${baseUrl}/rooms/${isBooking}`)
@@ -34,6 +33,7 @@ export async function createRoom(newCabin) {
       return res.json();
     })
     .catch((error) => console.log(error));
+  if (response.status === 409) return { code: "409" };
   return response.data;
 }
 export async function createRoomType({ name }) {
@@ -80,17 +80,21 @@ export async function deleteRoomType(id) {
     .catch((error) => console.log(error));
   return response;
 }
-export async function updateRoom(editCabin) {
-  // console.log(newCabin, id);
-  const { newCabin, editId } = editCabin;
-  const { data, error } = await supabase
-    .from("cabins")
-    .update(newCabin)
-    .eq("id", editId)
-    .select();
-  if (error) {
-    console.log(error);
-    throw new Error("Could not update room data");
-  }
-  return data;
+export async function updateRoom({ newRoom, id }) {
+  console.log(newRoom, id);
+  const response = await fetch(`${baseUrl}/rooms/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(newRoom),
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to edit the Room");
+      }
+      return res.json();
+    })
+    .catch((err) => console.log(err));
+  return response.data;
 }

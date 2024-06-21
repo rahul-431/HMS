@@ -87,3 +87,15 @@ export async function searchGuest(query) {
     .catch((err) => console.log(err));
   return response.data;
 }
+export async function getGuestBooking(id) {
+  const response = await fetch(`${baseUrl}/bookings/${id}`)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to fetch the booking");
+      }
+      return res.json();
+    })
+    .catch((err) => console.log(err));
+
+  return response.data;
+}

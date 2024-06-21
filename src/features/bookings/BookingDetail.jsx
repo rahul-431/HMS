@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { HiOutlineArrowDownOnSquareStack } from "react-icons/hi2";
+
 import { useNavigate } from "react-router-dom";
 import _ from "lodash";
 import BookingDataBox from "./BookingDataBox";
@@ -18,6 +18,8 @@ import Modal from "../../ui/Modal";
 import ConfirmAction from "../../ui/ConfirmAction";
 import useDeleteBooking from "./useDeleteBooking";
 import Empty from "../../ui/Empty";
+import useUpdateBooking from "./useUpdateBooking";
+import { addDays } from "date-fns";
 // import { useEffect } from "react";
 
 const HeadingGroup = styled.div`
@@ -29,6 +31,7 @@ const HeadingGroup = styled.div`
 function BookingDetail() {
   const { booking, isLoading } = useBooking();
   const { deleteBookingFn, isDeleting } = useDeleteBooking();
+  const { updateBookingInfo, isUpdating } = useUpdateBooking();
   const navigate = useNavigate();
   const moveBack = useMoveBack();
   // let disabled = false;
@@ -37,6 +40,10 @@ function BookingDetail() {
   const {
     status,
     _id: bookingId,
+    numNights,
+    roomCharge,
+    checkoutDate,
+    dueAmount,
     guest: { _id: guestId },
     room: { _id: roomId },
   } = booking;
@@ -49,6 +56,21 @@ function BookingDetail() {
     deleteBookingFn(bookingId, {
       onSettled: navigate(-1),
     });
+  };
+  const handleExtend = () => {
+    const rc = Number(roomCharge) / Number(numNights);
+    const newNumNights = Number(numNights) + 1;
+    const newRoomCharge = Number(rc) * Number(newNumNights);
+    const newDueAmount = Number(rc) + Number(dueAmount);
+    const newCheckoutDate = addDays(new Date(checkoutDate), parseInt(1));
+    const value = {
+      numNights: newNumNights,
+      roomCharge: newRoomCharge,
+      dueAmount: newDueAmount,
+      checkoutDate: newCheckoutDate,
+      isPaid: false,
+    };
+    updateBookingInfo({ value, bookingId });
   };
 
   if (isLoading) return <Spinner />;
@@ -72,28 +94,23 @@ function BookingDetail() {
           Guest Info
         </Button>
         {status === "unconfirmed" && (
-          <Button
-            icon={<HiOutlineArrowDownOnSquareStack />}
-            onClick={() => navigate(`/checkin/${bookingId}`)}
-          >
+          <Button onClick={() => navigate(`/checkin/${bookingId}`)}>
             Check In
           </Button>
         )}
-        {status === "checked-in" && (
-          <Button
-            icon={<HiOutlineArrowDownOnSquareStack />}
-            onClick={() => console.log("extend")}
-          >
-            Extend Stay
-          </Button>
-        )}
-        {status === "checked-in" && (
-          <CheckoutButton bookingId={bookingId} roomId={roomId} />
-        )}
+
         <Button variation="secondary" onClick={moveBack}>
           Back
         </Button>
+        {status === "checked-in" && (
+          <CheckoutButton bookingId={bookingId} roomId={roomId} />
+        )}
         <Modal>
+          {status === "checked-in" && (
+            <Modal.Open opens="confirm-extend">
+              <Button>Extend Stay</Button>
+            </Modal.Open>
+          )}
           <Modal.Open opens="confirmBookingDelete">
             <Button variation="danger">Delete</Button>
           </Modal.Open>
@@ -103,6 +120,14 @@ function BookingDetail() {
               resourceName="Booking"
               disabled={isDeleting}
               onConfirm={handleDelete}
+            />
+          </Modal.Window>
+          <Modal.Window name="confirm-extend">
+            <ConfirmAction
+              action="extend"
+              resourceName="Extend stay"
+              disabled={isUpdating}
+              onConfirm={handleExtend}
             />
           </Modal.Window>
         </Modal>

@@ -3,13 +3,10 @@ import styled from "styled-components";
 import { format, isToday } from "date-fns";
 import {
   HiOutlineChatBubbleBottomCenterText,
-  // HiOutlineCheckCircle,
-  // HiOutlineCurrencyDollar,
   HiOutlineHomeModern,
 } from "react-icons/hi2";
 
 import DataItem from "../../ui/DataItem";
-// import { Flag } from "../../ui/Flag";
 
 import {
   formatDistanceFromNow,
@@ -21,8 +18,6 @@ import Input from "../../ui/Input";
 import Button from "../../ui/Button";
 import { useState } from "react";
 import { Box } from "../check-in-out/CheckinBooking";
-// import Checkbox from "../../ui/Checkbox";
-// import useConfirmPaid from "./useConfirmPaid";
 import useUpdateBooking from "./useUpdateBooking";
 import ConfirmAction from "../../ui/ConfirmAction";
 import Modal from "../../ui/Modal";
@@ -149,16 +144,9 @@ function BookingDataBox({ booking }) {
   } = booking;
   const [otherCharge, setOtherCharge] = useState(0);
   const [payment, setPayment] = useState(0);
-  // const [confirmPaid, setConfirmPaid] = useState(isPaid && otherPaid);
   const { updateBookingInfo, isUpdating } = useUpdateBooking();
-  // const { confirmingPaid, isConfirmingPaid } = useConfirmPaid();
 
   const handleConfirm = () => {
-    // confirmingPaid(bookingId, {
-    //   onSuccess: () => {
-    //     setConfirmPaid(!confirmPaid);
-    //   },
-    // });
     const newExtraCharge = Number(newOtherCharge) + Number(extraCharge);
     const value = {
       extraCharge: newExtraCharge,
@@ -305,40 +293,23 @@ function BookingDataBox({ booking }) {
           <Price isPaid={isPaid && otherPaid}>
             <DataItem label={`Paid/Due status`}>
               {!isPaid && !otherPaid
-                ? `aDue Amount : ${formatCurrency(
+                ? `Due Amount : ${formatCurrency(
                     dueAmount
                   )} and Paid : ${formatCurrency(
                     extraCharge + roomCharge + newOtherCharge - dueAmount
                   )}`
                 : !isPaid && otherPaid
-                ? `bDue Amount : ${formatCurrency(
+                ? `Due Amount : ${formatCurrency(
                     dueAmount
                   )} and Paid:  ${formatCurrency(
                     extraCharge + roomCharge - dueAmount
                   )}`
                 : isPaid && !otherPaid
-                ? `cPaid : ${formatCurrency(
+                ? `Paid : ${formatCurrency(
                     extraCharge + roomCharge - dueAmount
                   )} and Due :
             ${formatCurrency(newOtherCharge)}`
                 : "All Paid"}
-              {/* {!isPaid &&
-                `Due Amount : ${formatCurrency(
-                  dueAmount + extraCharge + newOtherCharge
-                )} and Paid:  ${formatCurrency(
-                  extraCharge + roomCharge - dueAmount
-                )}`}
-              {!isPaid &&
-                !otherPaid &&
-                `Due Amount : ${formatCurrency(
-                  dueAmount + extraCharge + newOtherCharge
-                )}`}
-
-              {!otherPaid &&
-                `Paid : ${formatCurrency(
-                  extraCharge + roomCharge - dueAmount
-                )} and Due :
-            ${formatCurrency(newOtherCharge)}`} */}
             </DataItem>
             <p>{isPaid && otherPaid ? "Paid" : "Due"}</p>
           </Price>

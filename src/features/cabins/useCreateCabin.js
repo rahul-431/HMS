@@ -7,7 +7,10 @@ export default function useCreateCabin() {
 
   const { mutate: createCabin, isLoading: isCreating } = useMutation({
     mutationFn: createRoom,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      if (data.code) {
+        toast.error("Room is already exist");
+      }
       toast.success("New room created successfully");
       queryClient.invalidateQueries({ queryKey: ["cabin"] });
     },

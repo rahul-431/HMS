@@ -3,9 +3,9 @@ import { getToday } from "../utils/helpers";
 import { baseUrl } from "./apiGuest";
 import supabase from "./supabase";
 
-export async function getBookings({ filter, page, search }) {
+export async function getBookings({ filter, page, search, guestId }) {
   const response = await fetch(
-    `${baseUrl}/bookings?page=${page}&filter=${filter}&search=${search}`
+    `${baseUrl}/bookings?page=${page}&filter=${filter}&guestId=${guestId}&search=${search}`
   )
     .then((res) => {
       if (!res.ok) {

@@ -11,6 +11,7 @@ import styled from "styled-components";
 import { HiXMark } from "react-icons/hi2";
 import { StyledSelect } from "../../ui/Select";
 import useRoomType from "./useRoomType";
+import useUpdateCabin from "./useUpdateCabin";
 
 const StyledOptionContainer = styled.div`
   display: flex;
@@ -32,12 +33,22 @@ const StyledOption = styled.div`
     border-color: blue;
   }
 `;
-function CreateCabinForm({ closeModal }) {
+function CreateCabinForm({ closeModal, room = {} }) {
   const { roomTypes } = useRoomType();
-  const { register, handleSubmit, formState } = useForm();
-  const { errors } = formState;
   const { createCabin, isCreating } = useCreateCabin();
-  const [selectedFacilities, setSelectedFacilities] = useState([]);
+  const { updateCabin, isUpdating } = useUpdateCabin();
+  const { _id: editId, facilities, ...editValues } = room;
+  const isWorking = isCreating || isUpdating;
+  const isEditSession = Boolean(editId);
+  const { register, handleSubmit, formState } = useForm({
+    defaultValues: isEditSession ? editValues : {},
+  });
+
+  const { errors } = formState;
+
+  const [selectedFacilities, setSelectedFacilities] = useState(
+    isEditSession ? facilities : []
+  );
   const facilitiesOptions = [
     "Wifi",
     "Laundry",
@@ -55,14 +66,34 @@ function CreateCabinForm({ closeModal }) {
     formData.append("roomNumber", roomNumber);
     formData.append("roomType", roomType);
     formData.append("capacity", capacity);
-    formData.append("roomImage", images);
+    if (!isEditSession) {
+      formData.append("roomImage", images);
+    }
     formData.append("facilities", selectedFacilities);
 
-    createCabin(formData, {
-      onSuccess: () => {
-        closeModal?.();
-      },
-    });
+    if (isEditSession) {
+      const newData = {
+        roomNumber,
+        roomType,
+        capacity,
+        facilities: selectedFacilities,
+      };
+      console.log(newData);
+      updateCabin(
+        { newRoom: newData, id: editId },
+        {
+          onSuccess: () => {
+            closeModal?.();
+          },
+        }
+      );
+    } else {
+      createCabin(formData, {
+        onSuccess: () => {
+          closeModal?.();
+        },
+      });
+    }
   };
   const onError = (errors) => {
     console.log(errors);
@@ -99,7 +130,7 @@ function CreateCabinForm({ closeModal }) {
         />
       </FormRow>
       <FormRow
-        label="Room Category"
+        label={`Room Category ${isEditSession ? "(Note: Double check)" : ""} `}
         error={errors?.roomType?.message}
         id="roomType"
       >
@@ -202,22 +233,24 @@ function CreateCabinForm({ closeModal }) {
         </div>
       </div>
 
-      <FormRow label="Image" id="images" error={errors?.image?.message}>
-        <FileInput
-          id="images"
-          accept="image/*"
-          {...register("images", {
-            required: "This Field is required",
-          })}
-        />
-      </FormRow>
+      {!isEditSession && (
+        <FormRow label="Image" id="images" error={errors?.image?.message}>
+          <FileInput
+            id="images"
+            accept="image/*"
+            {...register("images", {
+              required: "This Field is required",
+            })}
+          />
+        </FormRow>
+      )}
 
       <FormRow>
         <Button variation="danger" type="reset" onClick={() => closeModal?.()}>
           Cancel
         </Button>
-        <Button type="submit" variation="primary" disabled={isCreating}>
-          Create cabin
+        <Button type="submit" variation="primary" disabled={isWorking}>
+          {isEditSession ? "Edit" : "Add"}
         </Button>
       </FormRow>
     </Form>

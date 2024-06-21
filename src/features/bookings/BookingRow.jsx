@@ -13,6 +13,7 @@ import {
   HiOutlineArrowUpOnSquareStack,
   HiOutlineEye,
   HiOutlineTrash,
+  // HiPencil,
 } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { useCheckout } from "../check-in-out/useCheckout";
@@ -133,15 +134,14 @@ function BookingRow({ booking }) {
                 Check Out
               </Menus.Button>
             )}
-            {status === "checked-in" && (
+            {/* {status === "checked-in" && (
               <Menus.Button
-                icon={<HiOutlineArrowUpOnSquareStack />}
-                onClick={() => console.log("extend by i day")}
-                disabled={isCheckingOut}
+                icon={<HiPencil />}
+                onClick={() => navigate(`/editBooking/${bookingId}`)}
               >
-                Extend Stay
+                Edit
               </Menus.Button>
-            )}
+            )} */}
             <Modal.Open opens="confirmBookingDelete">
               <Menus.Button icon={<HiOutlineTrash />}>Delete</Menus.Button>
             </Modal.Open>

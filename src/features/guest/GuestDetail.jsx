@@ -15,6 +15,8 @@ import useDeleteGuest from "./useDeleteGuest";
 import { useNavigate } from "react-router-dom";
 import GuestRegisterForm from "./GuestRegisterForm";
 
+import BookingTable from "../bookings/BookingTable";
+
 function GuestDetail() {
   const { guest, isLoading } = useGuest();
   const { deleteGuest, isDeleting } = useDeleteGuest();
@@ -61,6 +63,7 @@ function GuestDetail() {
           </Modal.Window>
         </Modal>
       </ButtonGroup>
+      <BookingTable />
     </>
   );
 }

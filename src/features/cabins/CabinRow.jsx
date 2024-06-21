@@ -1,17 +1,14 @@
 /* eslint-disable react/prop-types */
 import styled from "styled-components";
-import {
-  HiOutlinePencilSquare,
-  HiOutlineSquare2Stack,
-  HiOutlineTrash,
-} from "react-icons/hi2";
-import CabinEditForm from "./CabinEditForm";
+import { HiOutlinePencilSquare, HiOutlineTrash } from "react-icons/hi2";
+
 import useDeleteCabin from "./useDeleteCabin";
 import Modal from "../../ui/Modal";
 import ConfirmAction from "../../ui/ConfirmAction";
 import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
 import Tag from "../../ui/Tag";
+import CreateCabinForm from "./CreateCabinForm";
 
 const Img = styled.img`
   display: block;
@@ -70,9 +67,6 @@ export default function CabinRow({ cabin }) {
               <Menus.Menu>
                 <Menus.Toggle id={_id} />
                 <Menus.List id={_id}>
-                  <Menus.Button icon={<HiOutlineSquare2Stack />}>
-                    Duplicate
-                  </Menus.Button>
                   <Modal.Open opens="cabin-edit-form">
                     <Menus.Button icon={<HiOutlinePencilSquare />}>
                       Edit
@@ -85,7 +79,7 @@ export default function CabinRow({ cabin }) {
                   </Modal.Open>
                 </Menus.List>
                 <Modal.Window name="cabin-edit-form">
-                  <CabinEditForm editCabin={cabin} />
+                  <CreateCabinForm room={cabin} />
                 </Modal.Window>
                 <Modal.Window name="confirm-delete">
                   <ConfirmAction
@@ -100,13 +94,6 @@ export default function CabinRow({ cabin }) {
           </span>
         </ActionDiv>
       </Table.Row>
-
-      {/* another way of displaying modal except Compund component pattern */}
-      {/* {showForm && (
-        <Modal closeModal={() => setShowForm(false)}>
-          <CabinEditForm editCabin={cabin} setShowForm={setShowForm} />
-        </Modal>
-      )} */}
     </>
   );
 }
