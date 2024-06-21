@@ -3,12 +3,10 @@ import styled from "styled-components";
 import Tag from "../../ui/Tag";
 import Button from "../../ui/Button";
 import { Link } from "react-router-dom";
-import CheckoutButton from "./CheckoutButton";
 
 const StyledTodayItem = styled.li`
-  display: grid;
-  grid-template-columns: 9rem 2rem 1fr 7rem 9rem;
-  gap: 1.2rem;
+  display: flex;
+  gap: 1.6rem;
   align-items: center;
 
   font-size: 1.4rem;
@@ -36,7 +34,7 @@ export default function TodayItem({ activity }) {
       {status === "unconfirmed" && <Tag type="green">Arriving</Tag>}
       {status === "checked-in" && <Tag type="blue">Departing</Tag>}
       <Guest>{fullName}</Guest>
-      <div>{numNights} nights</div>
+      <Guest>{numNights} Nights</Guest>
       {status === "unconfirmed" && (
         <Button
           size="small"
@@ -48,9 +46,14 @@ export default function TodayItem({ activity }) {
         </Button>
       )}
       {status === "checked-in" && (
-        <CheckoutButton bookingId={_id} variation="danger">
+        <Button
+          size="small"
+          variation="danger"
+          as={Link}
+          to={`/bookings/${_id}`}
+        >
           Checkout
-        </CheckoutButton>
+        </Button>
       )}
     </StyledTodayItem>
   );

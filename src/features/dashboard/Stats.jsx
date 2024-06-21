@@ -85,7 +85,7 @@ function Stats({
       />
       <Stat
         title="Available Rooms"
-        color="red"
+        color="green"
         icon={<HiOutlineBuildingStorefront />}
         value={availableRoom}
       />

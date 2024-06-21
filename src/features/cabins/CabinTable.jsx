@@ -5,6 +5,7 @@ import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
 import { useSearchParams } from "react-router-dom";
 import Empty from "../../ui/Empty";
+import Heading from "../../ui/Heading";
 
 function CabinTable() {
   const { isLoading, error, cabins } = useCabin(false);
@@ -42,24 +43,27 @@ function CabinTable() {
   );
   if (!cabins.length) return <Empty resource="cabins" />;
   return (
-    <Menus>
-      <Table columns="0.6fr 0.8fr 1fr 0.6fr 1fr 1fr 1fr 1fr">
-        <Table.Header>
-          <div></div>
-          <div>Number</div>
-          <div>Category</div>
-          <div>Capacity</div>
-          <div>Clean Status</div>
-          <div>Room Status</div>
-          <div>Added By</div>
-          <div></div>
-        </Table.Header>
-        <Table.Body
-          data={sortedCabins}
-          render={(cabin) => <CabinRow cabin={cabin} key={cabin._id} />}
-        />
-      </Table>
-    </Menus>
+    <>
+      <Heading as="h3">All Rooms({cabins.length}) </Heading>
+      <Menus>
+        <Table columns="0.6fr 0.8fr 1fr 0.6fr 1fr 1fr 1fr 1fr">
+          <Table.Header>
+            <div></div>
+            <div>Number</div>
+            <div>Category</div>
+            <div>Capacity</div>
+            <div>Clean Status</div>
+            <div>Room Status</div>
+            <div>Added By</div>
+            <div></div>
+          </Table.Header>
+          <Table.Body
+            data={sortedCabins}
+            render={(cabin) => <CabinRow cabin={cabin} key={cabin._id} />}
+          />
+        </Table>
+      </Menus>
+    </>
   );
 }
 

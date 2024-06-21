@@ -11,7 +11,6 @@ function Cabins() {
       </Row>
 
       <Row>
-        <Heading as="h3">All Rooms</Heading>
         <CabinTable />
       </Row>
       <Row>
