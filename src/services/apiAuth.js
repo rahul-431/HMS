@@ -1,38 +1,64 @@
 import supabase, { supabaseUrl } from "./supabase";
 const baseUrl = import.meta.env.VITE_BASE_URL;
+const accessToken = localStorage.getItem("accessToken");
 export async function login({ email, password }) {
-  console.log("at api auth", email, password);
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-  if (error) {
-    console.log(error);
-    throw new Error(error);
-  }
-  return data;
+  const response = await fetch(`${baseUrl}/users/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      password,
+    }),
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("network response was not okay");
+      }
+      return res.json();
+    })
+    .catch((error) => console.log("Error while registering new user ", error));
+  return response.data;
 }
 export async function getCurrentUser() {
-  const { data: session } = await supabase.auth.getSession();
-  if (!session.session) return null;
-  const { data, error } = await supabase.auth.getUser();
-  if (error) {
-    console.log(error);
-    throw new Error(error);
-  }
-  return data?.user;
+  const response = await fetch(`${baseUrl}/users/getCurrent`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("network response was not okay");
+      }
+      return res.json();
+    })
+    .catch((error) => console.log("Failed to get current user", error));
+  return response.data;
 }
 export async function logout() {
-  const { error } = await supabase.auth.signOut();
-  if (error) {
-    throw new Error(error.message);
-  }
+  const response = await fetch(`${baseUrl}/users/logout`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("network response was not okay");
+      }
+      return res.json();
+    })
+    .catch((error) => console.log("Failed to logout user", error));
+  return response;
 }
 export async function signUp({ email, password, fullName }) {
   const response = await fetch(`${baseUrl}/users/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify({
       email,
@@ -52,8 +78,15 @@ export async function signUp({ email, password, fullName }) {
 export async function updateCurrentUser({ fullName, avatar, password }) {
   //1. Update fullname or password
   let updateData;
-  if (password) updateData = { password };
-  if (fullName) updateData = { data: { fullName } };
+  if (password) updateData = JSON.stringify({ password });
+  const formData = new FormData();
+
+  if (fullName && avatar) {
+    formData.append("fullName", fullName);
+    formData.append("avatar", avatar);
+    updateData = formData;
+  }
+  if (fullName) updateData = JSON.stringify({ fullName });
 
   const { data, error } = await supabase.auth.updateUser(updateData);
   if (error) {
@@ -79,7 +112,12 @@ export async function updateCurrentUser({ fullName, avatar, password }) {
   return updatedUserAvatar;
 }
 export async function getUsers() {
-  const response = await fetch(`${baseUrl}/users/`)
+  const response = await fetch(`${baseUrl}/users/`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
     .then((res) => {
       if (!res.ok) {
         throw new Error("Failed to fetch users");
@@ -96,6 +134,7 @@ export async function deleteUser(id) {
     method: "DELETE",
     headers: {
       "Content-type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
     },
   })
     .then((res) => {

@@ -8,6 +8,8 @@ export default function useLogout() {
     mutationFn: logoutApi,
     onSuccess: () => {
       queryClient.removeQueries();
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
       navigate("/login", { replace: true });
     },
   });

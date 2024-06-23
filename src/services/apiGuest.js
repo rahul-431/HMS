@@ -1,7 +1,14 @@
 export const baseUrl = import.meta.env.VITE_BASE_URL;
+const accessToken = localStorage.getItem("accessToken");
 export async function getGuests({ filter, page, search }) {
   const response = await fetch(
-    `${baseUrl}/guests?page=${page}&filter=${filter}&search=${search}`
+    `${baseUrl}/guests?page=${page}&filter=${filter}&search=${search}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
   )
     .then((res) => {
       if (!res.ok) {
@@ -19,6 +26,7 @@ export async function addGuest(guest) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify(guest),
   })
@@ -32,7 +40,12 @@ export async function addGuest(guest) {
   return response.data;
 }
 export async function getGuest(id) {
-  const response = await fetch(`${baseUrl}/guests/${id}`)
+  const response = await fetch(`${baseUrl}/guests/${id}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
     .then((res) => {
       if (!res.ok) {
         throw new Error("Failed to fetch the guest");
@@ -48,6 +61,7 @@ export async function deleteGuestApi(id) {
     method: "DELETE",
     headers: {
       "Content-Type": "applicaton/json",
+      Authorization: `Bearer ${accessToken}`,
     },
   })
     .then((res) => {
@@ -64,6 +78,7 @@ export async function editGuestApi({ newGuest, id }) {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify(newGuest),
   })
@@ -77,7 +92,12 @@ export async function editGuestApi({ newGuest, id }) {
   return response.data;
 }
 export async function searchGuest(query) {
-  const response = await fetch(`${baseUrl}/guests/search/${query}`)
+  const response = await fetch(`${baseUrl}/guests/search/${query}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
     .then((res) => {
       if (!res.ok) {
         throw new Error("Fetching failed");
@@ -88,7 +108,12 @@ export async function searchGuest(query) {
   return response.data;
 }
 export async function getGuestBooking(id) {
-  const response = await fetch(`${baseUrl}/bookings/${id}`)
+  const response = await fetch(`${baseUrl}/bookings/${id}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
     .then((res) => {
       if (!res.ok) {
         throw new Error("Failed to fetch the booking");
